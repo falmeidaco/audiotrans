@@ -37,9 +37,18 @@ document.addEventListener('keyup', event => {
 
 document.addEventListener('keydown', (event) => {
   let prevent_event = true;
+  
   /* Show shortcuts */
   if (event.ctrlKey || event.shiftKey) document.querySelector('.shortcuts').style.display = 'block';
+  document.querySelectorAll('.shortcuts p.h').forEach(item => {
+    item.classList.remove('h');
+  });
+
   if (event.ctrlKey && event.shiftKey) {
+    /* Highlight shortcuts */
+    document.querySelectorAll('.shortcuts p.ctrlshift').forEach(item => {
+      item.classList.add('h');
+    });
     switch (event.code) {
       case "ArrowLeft": seek(-1);
         break;
@@ -58,6 +67,11 @@ document.addEventListener('keydown', (event) => {
       default: prevent_event = false;
     }
   } else if (event.shiftKey) {
+    /* Highlight shortcuts */
+    document.querySelectorAll('.shortcuts p.shift').forEach(item => {
+      item.classList.add('h');
+    });
+
     switch (event.code) {
       case "ArrowUp": playpause();
         break;
@@ -66,6 +80,10 @@ document.addEventListener('keydown', (event) => {
       default: prevent_event = false;
     }
   } else if (event.ctrlKey) {
+    /* Highlight shortcuts */
+    document.querySelectorAll('.shortcuts p.ctrl').forEach(item => {
+      item.classList.add('h');
+    });
     switch (event.code) {
       case "Enter": append();
         break;
