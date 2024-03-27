@@ -87,7 +87,7 @@
       padding: 1rem;
       color: white;
       text-transform: uppercase;
-      font-size: .8rem;
+      font-size: .7rem;
     }
 
     .shortcuts p:has(strong):first-child {
@@ -100,6 +100,7 @@
 
     .shortcuts p {
       line-height: .6rem;
+      color: lightgray;
     }
 
     .shortcuts p span {
@@ -107,6 +108,13 @@
       width: 100px;
       text-align: right;
       margin-right: 1rem;
+      color: white;
+    }
+    .shortcuts p.h {
+      color:aqua !important;
+    }
+    .shortcuts p.h span {
+      color:aqua !important;
     }
   </style>
 </head>
@@ -114,26 +122,27 @@
 <body>
   <div class="shortcuts">
     <p><strong>LOAD</strong></p>
-    <p><span>SHIFT ↑</span>Open audio file</p>
-    <p><span>CTRL SHIFT L</span>Open transcript file</p>
-    <p><span>CTRL L</span>Load from browser storage</p>
+    <p class="shift"><span>SHIFT ↑</span>Open audio file</p>
+    <p class="shift ctrl"><span>CTRL SHIFT L</span>Open transcript file</p>
+    <p class="ctrl"><span>CTRL L</span>Load from browser storage</p>
 
     <p><strong>SAVE</strong></p>
-    <p><span>CTRL SHIFT S</span>Save transcription file</p>
-    <p><span>CTRL S</span>Save on browser only</p>
+    <p class="shift ctrl"><span>CTRL SHIFT S</span>Save transcription file</p>
+    <p class="ctrl"><span>CTRL S</span>Save on browser only</p>
 
     <p><strong>AUDIO CONTROLER</strong></p>
-    <p><span>SHIFT ↑</span>Play/pause</p>
-    <p><span>CRTL P</span>Play current</p>
-    <p><span>CRTL SHIFT ←</span>Back 1s</p>
-    <p><span>CRTL SHIFT →</span>Foward 1s</p>
+    <p class="ctrl"><span>CTRL SPACE</span>Play/pause</p>
+    <p class="ctrl"><span>CRTL P</span>Play current</p>
+    <p class="ctrl"><span>CRTL SHIFT ←</span>Back 1s</p>
+    <p class="ctrl"><span>CRTL SHIFT →</span>Foward 1s</p>
 
     <p><strong>MODIFIER</strong></p>
-    <p><span>SHIFT ↑</span>Play/pause</p>
-    <p><span>CRTL P</span>Play current</p>
-    <p><span>CRTL U</span>Refresh with current position</p>
-    <p><span>CRTL SHIFT [</span>Update position with -0.5</p>
-    <p><span>CRTL SHIFT ]</span>Update position with +0.5</p>
+    <p class="ctrl"><span>CTRL ENTER</span>Append transcription</p>
+    <p class="ctrl shift"><span>SHIFT ↑</span>Play/pause</p>
+    <p class="ctrl"><span>CRTL P</span>Play current</p>
+    <p class="ctrl"><span>CRTL U</span>Refresh with current position</p>
+    <p class="ctrl shift"><span>CRTL SHIFT [</span>Update position with -0.5</p>
+    <p class="ctrl shift"><span>CRTL SHIFT ]</span>Update position with +0.5</p>
   </div>
   <div class="toolbar">
     <div>

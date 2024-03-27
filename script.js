@@ -55,8 +55,6 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyL": load();
         break;
-      case "Enter": append();
-        break;
       default: prevent_event = false;
     }
   } else if (event.shiftKey) {
@@ -69,6 +67,10 @@ document.addEventListener('keydown', (event) => {
     }
   } else if (event.ctrlKey) {
     switch (event.code) {
+      case "Enter": append();
+        break;
+      case "Space": playpause();
+        break;
       case "KeyP": playcurrent();
         break;
       case "KeyU": refreshtime();
