@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+    }
+
+    ol {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border: 1px solid lightgray;
+    }
+
+    ol li:nth-child(even) {
+      background-color: lightgray;
+    }
+
+    ol li {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    ol li:has(textarea:focus) {
+      background-color: lightskyblue;
+    }
+
+    ol li div:nth-child(2) {
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+
+    ol li textarea {
+      width: 100%;
+      height: 4rem;
+    }
+
+    .toolbar {
+      position: fixed;
+      width: 100vw;
+      height: 80px;
+      box-shadow: 0 3px 5px lightgray;
+      text-transform: uppercase;
+      font-size: .8rem;
+      background-color: white;
+      z-index: 1;
+    }
+
+    .toolbar input[type="file"] {
+      display: none;
+    }
+
+    .toolbar audio {
+      width: 100%;
+      height: 50px;
+    }
+
+    .toolbar .info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      height: 25px;
+      padding: 0 1rem;
+    }
+
+    .transcription {
+      padding-top: 80px;
+    }
+
+    .shortcuts {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      background-color: rgba(0, 0, 0, .7);
+      z-index: 2;
+      font-family: monospace;
+      padding: 1rem;
+      color: white;
+      text-transform: uppercase;
+      font-size: .8rem;
+    }
+
+    .shortcuts p:has(strong):first-child {
+      margin-top: 0;
+    }
+
+    .shortcuts p:has(strong) {
+      margin-top: 1.5rem;
+    }
+
+    .shortcuts p {
+      line-height: .6rem;
+    }
+
+    .shortcuts p span {
+      display: inline-block;
+      width: 100px;
+      text-align: right;
+      margin-right: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shortcuts">
+    <p><strong>LOAD</strong></p>
+    <p><span>SHIFT ↑</span>Open audio file</p>
+    <p><span>CTRL SHIFT L</span>Open transcript file</p>
+    <p><span>CTRL L</span>Load from browser storage</p>
+
+    <p><strong>SAVE</strong></p>
+    <p><span>CTRL SHIFT S</span>Save transcription file</p>
+    <p><span>CTRL S</span>Save on browser only</p>
+
+    <p><strong>AUDIO CONTROLER</strong></p>
+    <p><span>SHIFT ↑</span>Play/pause</p>
+    <p><span>CRTL P</span>Play current</p>
+    <p><span>CRTL SHIFT ←</span>Back 1s</p>
+    <p><span>CRTL SHIFT →</span>Foward 1s</p>
+
+    <p><strong>MODIFIER</strong></p>
+    <p><span>SHIFT ↑</span>Play/pause</p>
+    <p><span>CRTL P</span>Play current</p>
+    <p><span>CRTL U</span>Refresh with current position</p>
+    <p><span>CRTL SHIFT [</span>Update position with -0.5</p>
+    <p><span>CRTL SHIFT ]</span>Update position with +0.5</p>
+  </div>
+  <div class="toolbar">
+    <div>
+      <input id="audio_file" type="file">
+      <audio controls></audio>
+    </div>
+    <div class="info">
+      <div>
+        <label for="names">
+          Names <input id="names" size="50" type="text" name="names" value="M,P1,P2,P3,P4,P5,P6,P5,P8">
+        </label>
+      </div>
+      <div>
+        <label for="playback_rate">
+          Speed
+          <input id="playback_rate" type="number" step="0.25" min="0" max="3" value="1">
+        </label>
+      </div>
+      <div>
+        <label for="current_position">
+          Position
+          <input id="current_position" type="text" readonly value="0">
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="transcription">
+    <ol></ol>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>
