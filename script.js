@@ -153,7 +153,7 @@ function append(data) {
                 /* Load names */
                 let option_values = document.querySelector('#names').value.split(',');
                 /* Parse name as options */
-                return option_values.map(value => {
+                let options =  option_values.map(value => {
                   let option = {
                     type: 'option',
                     attr: { value: value.toUpperCase() },
@@ -165,6 +165,7 @@ function append(data) {
                   }
                   return option;
                 });
+                return [{type:'option', attr:{value:''}, content:''}, ...options]
               }(values.name))
             }
           },
