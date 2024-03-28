@@ -54,10 +54,6 @@ document.addEventListener('keydown', (event) => {
         break;
       case "ArrowRight": seek(1);
         break;
-      case "BracketLeft": refreshtime(-0.5);
-        break;
-      case "BracketRight": refreshtime(0.5);
-        break;
       case "KeyD": del();
         break;
       case "KeyS": save();
@@ -85,6 +81,10 @@ document.addEventListener('keydown', (event) => {
       item.classList.add('h');
     });
     switch (event.code) {
+      case "BracketLeft": refreshtime(-0.5);
+        break;
+      case "BracketRight": refreshtime(0.5);
+        break;
       case "Enter": append();
         break;
       case "Space": playpause();
