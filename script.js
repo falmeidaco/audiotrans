@@ -30,6 +30,8 @@ function refreshcurrentposition() {
 }
 window.requestAnimationFrame(refreshcurrentposition);
 
+const config_markonpause = document.querySelector('#config_markonpause');
+
 document.addEventListener('keyup', event => {
   /* hide shortcuts */
   document.querySelector('.shortcuts').style.display = 'none';
@@ -44,6 +46,7 @@ document.addEventListener('keydown', (event) => {
     item.classList.remove('h');
   });
 
+  /* CTRL SHIFT EVENTS */
   if (event.ctrlKey && event.shiftKey) {
     /* Highlight shortcuts */
     document.querySelectorAll('.shortcuts p.ctrlshift').forEach(item => {
@@ -62,6 +65,8 @@ document.addEventListener('keydown', (event) => {
         break;
       default: prevent_event = false;
     }
+  
+  /* SHIFT EVENTS */
   } else if (event.shiftKey) {
     /* Highlight shortcuts */
     document.querySelectorAll('.shortcuts p.shift').forEach(item => {
@@ -75,6 +80,8 @@ document.addEventListener('keydown', (event) => {
         break;
       default: prevent_event = false;
     }
+
+  /* CTRL EVENTS */
   } else if (event.ctrlKey) {
     /* Highlight shortcuts */
     document.querySelectorAll('.shortcuts p.ctrl').forEach(item => {
@@ -97,6 +104,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyL": load(true);
         break;
+      case "KeyR": playlastmark();
+        break;
       default: prevent_event = false;
     }
   } else {
@@ -115,7 +124,27 @@ function playpause() {
   } else {
     audio.pause();
   }
+  // Save mark
+  if (config_markonpause.checked) {
+    current_textarea = document.querySelector('textarea:focus');
+    if (current_textarea) {
+      if (!/\[\d+\.\d+\] ?$/g.test(current_textarea.value)) {
+        document.querySelector('textarea:focus').value = `${document.querySelector('textarea:focus').value.trim()} [${audio.currentTime}] `;
+      }
+    }
+  }
 };
+
+function playlastmark() {
+  const textarea = document.querySelector('textarea:focus');
+  if (textarea) {
+    let marks = textarea.value.match(/\[\d+\.\d+\]/g);
+    if (marks.length > 0) {
+      audio.currentTime = parseFloat(marks[marks.length-1].replace(/[\[\]]/g,''));
+      audio.play();
+    }
+  }
+}
 
 function repeat() {
   const pointer = document.querySelector('ol li:last-child');
