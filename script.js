@@ -129,7 +129,7 @@ function playpause() {
     current_textarea = document.querySelector('textarea:focus');
     if (current_textarea) {
       if (!/\[\d+\.\d+\] ?$/g.test(current_textarea.value)) {
-        document.querySelector('textarea:focus').value = `${document.querySelector('textarea:focus').value.trim()} [${audio.currentTime}] `;
+        document.querySelector('textarea:focus').value = `${document.querySelector('textarea:focus').value.trim()} [${audio.currentTime.toFixed(3)}] `;
       }
     }
   }
