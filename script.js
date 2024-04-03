@@ -106,6 +106,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyR": playlastmark();
         break;
+      case "KeyB": markabreak();
+        break;
       default: prevent_event = false;
     }
   } else {
@@ -126,14 +128,18 @@ function playpause() {
   }
   // Save mark
   if (config_markonpause.checked) {
-    current_textarea = document.querySelector('textarea:focus');
-    if (current_textarea) {
-      if (!/\[\d+\.\d+\] ?$/g.test(current_textarea.value)) {
-        document.querySelector('textarea:focus').value = `${document.querySelector('textarea:focus').value.trim()} [${audio.currentTime.toFixed(3)}] `;
-      }
-    }
+    markabreak();
   }
 };
+
+function markabreak() {
+  current_textarea = document.querySelector('textarea:focus');
+  if (current_textarea) {
+    if (!/\[\d+\.\d+\] ?$/g.test(current_textarea.value)) {
+      document.querySelector('textarea:focus').value = `${document.querySelector('textarea:focus').value.trim()} [${audio.currentTime.toFixed(4)}] `;
+    }
+  }
+}
 
 function playlastmark() {
   const textarea = document.querySelector('textarea:focus');
