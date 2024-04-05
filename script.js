@@ -94,6 +94,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "Enter": append();
         break;
+      case "ArrowDown": append();
+        break;
       case "Space": playpause();
         break;
       case "KeyP": playcurrent();
@@ -431,4 +433,8 @@ function createNode(node) {
     }
   }
   return nodeElement;
+}
+
+function isDeviceiPad(){
+  return navigator.userAgent.match(/iPad/i);
 }
