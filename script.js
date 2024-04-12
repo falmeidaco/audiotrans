@@ -35,13 +35,17 @@ const config_markonpause = document.querySelector('#config_markonpause');
 document.addEventListener('keyup', event => {
   /* hide shortcuts */
   document.querySelector('.shortcuts').style.display = 'none';
+  document.querySelector('ol').classList.remove('info');
 });
 
 document.addEventListener('keydown', (event) => {
   let prevent_event = true;
   
   /* Show shortcuts */
-  if (event.ctrlKey || event.shiftKey) document.querySelector('.shortcuts').style.display = 'block';
+  if (event.ctrlKey || event.shiftKey) {
+    document.querySelector('.shortcuts').style.display = 'block';
+    document.querySelector('ol').classList.add('info');
+  }
   document.querySelectorAll('.shortcuts p.h').forEach(item => {
     item.classList.remove('h');
   });
@@ -290,8 +294,35 @@ function play(element) {
 
 function remaptabindex() {
   document.querySelectorAll('ol li').forEach((e, i) => {
+    let v3 = 0;
+    if (e.nextSibling) {
+      let v1 = parseFloat(e.childNodes[0].childNodes[1].firstChild.value);
+      let v2 = parseFloat(e.nextSibling.childNodes[0].childNodes[1].firstChild.value);
+      v3 = v2-v1;
+    }
+    e.dataset.index = `${i} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)}`;
     e.querySelector('textarea').setAttribute('tabindex', i + 1);
   });
+}
+
+function formatTime(seconds) {
+  // Convert seconds to milliseconds
+  var milliseconds = seconds * 1000;
+
+  // Create a new Date object with milliseconds
+  var date = new Date(milliseconds);
+
+  // Get hours, minutes, and seconds
+  var hours = date.getUTCHours();
+  var minutes = date.getUTCMinutes();
+  var seconds = date.getUTCSeconds();
+
+  // Format the time string
+  var timeString = hours.toString().padStart(2, '0') + ":" +
+                   minutes.toString().padStart(2, '0') + ":" +
+                   seconds.toString().padStart(2, '0');
+
+  return timeString;
 }
 
 function del(element) {

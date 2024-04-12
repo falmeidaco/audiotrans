@@ -31,6 +31,7 @@
       padding: 1rem;
     }
 
+
     ol li:has(textarea:focus) {
       background-color: lightskyblue;
     }
@@ -115,6 +116,23 @@
     }
     .shortcuts p.h span {
       color:aqua !important;
+    }
+    @layer {
+      ol li {
+        position: relative;
+      }
+      ol.info li::before {
+        position: absolute;
+        content: attr(data-index);
+        display: block;
+        color: yellow; 
+        background-color: black;
+        font-family: monospace;
+        font-size: 0.7rem;
+        padding: .1rem .3rem;
+        top: 0;
+        left: 0;
+      }
     }
   </style>
 </head>
