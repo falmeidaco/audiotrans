@@ -178,10 +178,16 @@ function append(data) {
   /* Overwrite defaults */
   if (data) {
     values = { ...values, ...data };
+    if (!data.hasOwnProperty('timestamp')) {
+      values['timestamp'] = 0;
+    }
+  } else {
+    values['timestamp'] = Date.now();
   }
   /* Create node */
   const node = createNode({
     type: 'li',
+    attr:{'data-timestamp':values.timestamp},
     content: [
       {
         type: 'div',
@@ -295,12 +301,17 @@ function play(element) {
 function remaptabindex() {
   document.querySelectorAll('ol li').forEach((e, i) => {
     let v3 = 0;
+    let t = ''
     if (e.nextSibling) {
       let v1 = parseFloat(e.childNodes[0].childNodes[1].firstChild.value);
       let v2 = parseFloat(e.nextSibling.childNodes[0].childNodes[1].firstChild.value);
       v3 = v2-v1;
     }
-    e.dataset.index = `${i} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)}`;
+    if (parseInt(e.dataset.timestamp) > 0) {
+      const d = new Date(parseInt(e.dataset.timestamp));
+      t = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+    }
+    e.dataset.index = `${i} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)} | ${t}`;
     e.querySelector('textarea').setAttribute('tabindex', i + 1);
   });
 }
@@ -348,6 +359,7 @@ function load(browser) {
   if (browser) {
     if (window.localStorage.hasOwnProperty('transcription')) {
       let data = JSON.parse(window.localStorage.getItem('transcription'));
+      document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';
       document.querySelector('#names').value = data.names;
       data.transcription.forEach(d => {
         append(d);
@@ -366,6 +378,7 @@ function load(browser) {
     file_reader.onload = function (e) {
       reset();
       const data = JSON.parse(e.target.result);
+      document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';;
       document.querySelector('#names').value = data.names;
       data.transcription.forEach(d => {
         append(d);
@@ -377,6 +390,7 @@ function load(browser) {
 
 function save(browser_only) {
   let object_result = {
+    name: document.querySelector('#name').value.trim(),
     names: document.querySelector('#names').value.trim(),
     transcription: []
   };
@@ -387,10 +401,10 @@ function save(browser_only) {
     let o = {
       name: e.querySelector('select').value,
       position: e.querySelector('input[name="position"]').value,
-      text: e.querySelector('textarea').value
+      text: e.querySelector('textarea').value,
+      timestamp: parseInt(e.dataset.timestamp)
     }
     object_result.transcription.push(o);
-    text_result += `${o.s}[${o.p}]: ${o.t}\n---\n`;
   });
 
   text_result = JSON.stringify(object_result);
@@ -407,7 +421,7 @@ function save(browser_only) {
     "cancelable": false
   });
   a.href = window.URL.createObjectURL(blob);
-  a.download = `transcription-${Date.now()}.txt`;
+  a.download = `transcription-${object_result.name}-${Date.now()}.txt`;
   a.dispatchEvent(clickEvent);
 }
 
