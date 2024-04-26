@@ -65,6 +65,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyS": save();
         break;
+      case "KeyE": save_html();
+        break;
       case "KeyL": load();
         break;
       default: prevent_event = false;
@@ -388,14 +390,13 @@ function load(browser) {
   input.click();
 }
 
-function save(browser_only) {
+function parse_data_to_json() { 
   let object_result = {
     name: document.querySelector('#name').value.trim(),
     names: document.querySelector('#names').value.trim(),
     transcription: []
-  };
+  }
 
-  let text_result = '';
   const data = document.querySelectorAll('ol li');
   data.forEach(e => {
     let o = {
@@ -407,12 +408,25 @@ function save(browser_only) {
     object_result.transcription.push(o);
   });
 
-  text_result = JSON.stringify(object_result);
+  return object_result;
+}
 
-  window.localStorage.setItem('transcription', text_result);
+function save(browser_only) {
+  const content = parse_data_to_json();
+  window.localStorage.setItem('transcription', JSON.stringify(content));
   if (browser_only) return;
 
-  // Save browser
+  // Export file
+  export_json(content);
+}
+
+function save_html() {
+  const content = parse_data_to_json();
+  export_html(content);
+}
+
+function export_json(content) {
+  const text_result = JSON.stringify(content);
   const a = document.createElement('a');
   const blob = new Blob([text_result], { type: "text/plain" });
   const clickEvent = new MouseEvent("click", {
@@ -421,7 +435,44 @@ function save(browser_only) {
     "cancelable": false
   });
   a.href = window.URL.createObjectURL(blob);
-  a.download = `transcription-${object_result.name}-${Date.now()}.txt`;
+  a.download = `transcription-${content.name}-${Date.now()}.txt`;
+  a.dispatchEvent(clickEvent);
+}
+
+function export_html(content) {
+  let content_text = '';
+  if (content) {
+    content.transcription.map(t => {
+      content_text += `<tr><td><p>${t.name}</p></td><td><p>${t.text}</p></td></tr>\n`;
+    });
+  }
+  let html_content = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trascrição ${content.name} com ${content.transcription.length} fala(s)</title>
+<style>
+td,th { vertical-align:top; }
+tr:nth-child(odd) { background-color:lightgray; }
+</style>
+</head>
+<body>
+<table>
+<tr><th>Nome</th><th>Transcrição</th></tr>
+${content_text}
+</table>
+</body>
+</html>`;
+  const a = document.createElement('a');
+  const blob = new Blob([html_content], { type: "text/html" });
+  const clickEvent = new MouseEvent("click", {
+    "view": window,
+    "bubbles": true,
+    "cancelable": false
+  });
+  a.href = window.URL.createObjectURL(blob);
+  a.download = `document-${(content) ? content.name : ''}-${Date.now()}.html`;
   a.dispatchEvent(clickEvent);
 }
 
@@ -471,6 +522,7 @@ function createNode(node) {
   }
   //Events
   if (node.hasOwnProperty('events')) {
+    let event;
     for (event in node.events) {
       if (node.events.hasOwnProperty(event)) {
         nodeElement.addEventListener(event, node.events[event], false);
