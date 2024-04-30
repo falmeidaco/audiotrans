@@ -69,6 +69,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyL": load();
         break;
+      case "Enter": append(null, true);
+        break;
       default: prevent_event = false;
     }
   
@@ -170,7 +172,7 @@ function seek(value) {
   audio.currentTime = audio.currentTime + parseFloat(value);
 }
 
-function append(data) {
+function append(data, before) {
   /* Default values */
   let values = {
     name: '',
@@ -260,9 +262,14 @@ function append(data) {
       }
     ]
   });
-  document.querySelector('ol').appendChild(node);
+  if (before) {
+    document.querySelector('ol').insertBefore(node, document.querySelector('textarea:focus').parentElement.parentElement);
+    node.querySelector('textarea').focus();
+  } else {
+    document.querySelector('ol').appendChild(node);
+    document.querySelector('ol li:last-child textarea').focus();
+  }
   remaptabindex();
-  document.querySelector('ol li:last-child textarea').focus();
 }
 
 function select(target) {
