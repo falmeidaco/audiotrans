@@ -320,7 +320,7 @@ function remaptabindex() {
       const d = new Date(parseInt(e.dataset.timestamp));
       t = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
     }
-    e.dataset.index = `${i} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)} | ${t}`;
+    e.dataset.index = `${(i+1)} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)} | ${t}`;
     e.querySelector('textarea').setAttribute('tabindex', i + 1);
   });
 }
@@ -448,9 +448,11 @@ function export_json(content) {
 
 function export_html(content) {
   let content_text = '';
+  let i = 1;
   if (content) {
     content.transcription.map(t => {
-      content_text += `<tr><td><p>${t.name}</p></td><td><p>${t.text}</p></td></tr>\n`;
+      content_text += `<tr><td><p>${i}</p></td><td><p>${t.name}</p></td><td><p>${t.text}</p></td></tr>\n`;
+      i++;
     });
   }
   let html_content = `<!DOCTYPE html>
@@ -466,7 +468,7 @@ tr:nth-child(odd) { background-color:lightgray; }
 </head>
 <body>
 <table>
-<tr><th>Nome</th><th>Transcrição</th></tr>
+<tr><th>#</th><th>Nome</th><th>Transcrição</th></tr>
 ${content_text}
 </table>
 </body>
