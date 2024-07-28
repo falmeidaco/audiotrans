@@ -4,6 +4,7 @@ const audio = document.querySelector("audio");
 audio.addEventListener('loadedmetadata', (event) => {
   audio_loaded = true;
   audio.playbackRate = parseFloat(document.querySelector('#playback_rate').value);
+  document.querySelector('#duration').value = audio.duration;
   append();
 });
 audio.addEventListener('playing', (e) => {
@@ -66,6 +67,8 @@ document.addEventListener('keydown', (event) => {
       case "KeyS": save();
         break;
       case "KeyE": save_html();
+        break;
+      case "KeyK": export_audio_segments();
         break;
       case "KeyL": load();
         break;
@@ -370,6 +373,7 @@ function load(browser) {
       let data = JSON.parse(window.localStorage.getItem('transcription'));
       document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';
       document.querySelector('#names').value = data.names;
+      document.querySelector('#duration').value = data.duration;
       data.transcription.forEach(d => {
         append(d);
       })
@@ -401,6 +405,7 @@ function parse_data_to_json() {
   let object_result = {
     name: document.querySelector('#name').value.trim(),
     names: document.querySelector('#names').value.trim(),
+    duration:`${(audio.duration || document.querySelector('#duration').value)}`,
     transcription: []
   }
 
@@ -482,6 +487,30 @@ ${content_text}
   });
   a.href = window.URL.createObjectURL(blob);
   a.download = `document-${(content) ? content.name : ''}-${Date.now()}.html`;
+  a.dispatchEvent(clickEvent);
+}
+
+function export_audio_segments() {
+  const content = parse_data_to_json();
+  let content_text = '';
+  for (let i = 0; i < content.transcription.length; i = i +1) {
+    let next = (content.transcription[(i+1)]) ? content.transcription[(i+1)].position : content.duration;
+    let length = parseFloat(next) - parseFloat(content.transcription[i].position);
+    if (length <=0) length += 1;
+    content_text += `${(i+1)}_${content.transcription[i].name},${parseFloat(content.transcription[i].position).toFixed(3)},${parseFloat(length).toFixed(3)}\n`
+    //content_text += `ffmpeg -y -loglevel error -i "audio1.wav" -ss "${parseFloat(content.transcription[i].position).toFixed(3)}" -t "${parseFloat(length).toFixed(3)}" -q:a 0 "audio_segments/${(i+1)}_${content.transcription[i].name}.mp3"\n`
+  }
+  let csv_content = `id,start_time,length
+${content_text}`;
+  const a = document.createElement('a');
+  const blob = new Blob([csv_content], { type: "text/html" });
+  const clickEvent = new MouseEvent("click", {
+    "view": window,
+    "bubbles": true,
+    "cancelable": false
+  });
+  a.href = window.URL.createObjectURL(blob);
+  a.download = `audio_segments-${(content) ? content.name : ''}-${Date.now()}.csv`;
   a.dispatchEvent(clickEvent);
 }
 

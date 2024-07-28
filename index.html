@@ -79,6 +79,7 @@
     }
 
     .shortcuts {
+      border-radius: 10px;
       position: fixed;
       right: 20px;
       top: 20px;
@@ -88,7 +89,7 @@
       padding: 1rem;
       color: white;
       text-transform: uppercase;
-      font-size: .7rem;
+      font-size: 1.1rem;
     }
 
     .shortcuts p:has(strong):first-child {
@@ -96,17 +97,18 @@
     }
 
     .shortcuts p:has(strong) {
-      margin-top: 1.5rem;
+      margin-top: 2em;
     }
 
     .shortcuts p {
       line-height: .4rem;
       color: lightgray;
+      text-wrap:nowrap;
     }
 
     .shortcuts p span {
       display: inline-block;
-      width: 100px;
+      width: 160px;
       text-align: right;
       margin-right: 1rem;
       color: white;
@@ -147,14 +149,15 @@
     <p><strong>SAVE</strong></p>
     <p class="ctrlshift"><span>CTRL SHIFT S</span>Save transcription file</p>
     <p class="ctrlshift"><span>CTRL SHIFT E</span>Export transcription document</p>
+    <p class="ctrlshift"><span>CTRL SHIFT K</span>Export audio segmentation</p>
     <p class="ctrl"><span>CTRL S</span>Save on browser only</p>
 
     <p><strong>AUDIO CONTROLER</strong></p>
     <p class="ctrl"><span>CTRL SPACE</span>Play/pause</p>
     <p class="ctrl"><span>CRTL P</span>Play current</p>
     <p class="ctrl"><span>CRTL R</span>Replay from last mark</p>
-    <p class="ctrl"><span>CRTL SHIFT ←</span>Back 1s</p>
-    <p class="ctrl"><span>CRTL SHIFT →</span>Foward 1s</p>
+    <p class="ctrlshift"><span>CRTL SHIFT ←</span>Back 1s</p>
+    <p class="ctrlshift"><span>CRTL SHIFT →</span>Foward 1s</p>
 
     <p><strong>MODIFIER</strong></p>
     <p class="ctrl"><span>CTRL ENTER</span>Append transcription</p>
@@ -186,6 +189,12 @@
         <label for="playback_rate">
           Speed
           <input id="playback_rate" type="number" step="0.25" min="0" max="3" value="1">
+        </label>
+      </div>
+      <div>
+        <label for="current_position">
+          Duration
+          <input id="duration" type="text" readonly value="0">
         </label>
       </div>
       <div>
