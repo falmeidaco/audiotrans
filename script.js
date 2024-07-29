@@ -23,6 +23,7 @@ document.querySelector('#playback_rate').addEventListener('change', (e) => {
   }
 });
 
+
 const current_position = document.querySelector('#current_position');
 function refreshcurrentposition() {
   if (audio_loaded) {
@@ -33,6 +34,16 @@ function refreshcurrentposition() {
 window.requestAnimationFrame(refreshcurrentposition);
 
 const config_markonpause = document.querySelector('#config_markonpause');
+
+const analise_mode_control = document.querySelector('#analise_mode');
+
+analise_mode_control.addEventListener('change', (event) => {
+  if (event.target.checked) {
+    document.querySelector('.transcription').classList.add('analise-mode');
+  } else {
+    document.querySelector('.transcription').classList.remove('analise-mode');
+  }
+});
 
 document.addEventListener('keyup', event => {
   /* hide shortcuts */
@@ -74,6 +85,8 @@ document.addEventListener('keydown', (event) => {
       case "KeyL": load();
         break;
       case "Enter": append(null, true);
+        break;
+      case "KeyA": analise_mode_control.click();
         break;
       default: prevent_event = false;
     }
@@ -189,7 +202,8 @@ function append(data, before) {
   let values = {
     name: '',
     position: audio.currentTime,
-    text: ''
+    text: '',
+    analise:'',
   }
   /* Overwrite defaults */
   if (data) {
@@ -266,11 +280,35 @@ function append(data, before) {
       },
       {
         type: 'div',
-        content: {
-          type: 'textarea',
-          attr: { placeholder: '<audio transcription>' },
-          content: ((data) ? data.text : "")
-        }
+        content: 
+          [
+            {
+              type: 'textarea',
+              attr: { placeholder: '<audio transcription>' },
+              content: ((data) ? data.text : "")
+            },
+            {
+              type: 'div',
+              attr: {class:'analise'},
+              content: ((values.analise.trim() !== '') ? values.analise : values.text),
+              events: {
+                'dblclick': (e) => {
+                  if (e.target.classList.contains('analise')) {
+                    if (!e.target.classList.contains('analise-edit')) {
+                      e.target.classList.add('analise-edit');
+                      e.target.setAttribute('contenteditable', true);
+                    } else {
+                      e.target.previousSibling.value = e.target.innerText;
+                      e.target.classList.remove('analise-edit');
+                      e.target.removeAttribute('contenteditable');
+                      save(true);
+                    }
+                  } else {
+                  }
+                }
+              }
+            }
+          ]
       }
     ]
   });
@@ -402,12 +440,14 @@ function load(browser) {
       const data = JSON.parse(e.target.result);
       document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';;
       document.querySelector('#names').value = data.names;
+      document.querySelector('#duration').value = data.duration;
       data.transcription.forEach(d => {
         append(d);
       });
     }
   });
   input.click();
+  document.querySelectorAll('load_from_browser_button').style.display = 'none';
 }
 
 function parse_data_to_json() { 

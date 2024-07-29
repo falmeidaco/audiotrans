@@ -38,12 +38,27 @@
 
     ol li div:nth-child(2) {
       flex-grow: 1;
-      flex-shrink: 0;
+      flex-shrink: 1;
     }
 
     ol li textarea {
       width: 100%;
       height: 4rem;
+    }
+
+    .transcription .edit {
+      display: none;
+    }
+
+    .transcription.analise-mode textarea {
+      display: none;
+    }
+    .transcription.analise-mode .edit {
+      display: block;
+    }
+
+    .analise.analise-edit {
+      background-color: bisque;
     }
 
     .toolbar {
@@ -56,7 +71,7 @@
       background-color: white;
       z-index: 1;
     }
-    
+
     .audio_container {
       padding: 0 10px;
       text-align: center;
@@ -198,7 +213,7 @@
       </div>
       <div>
         <label for="names">
-          Names <input id="names" size="50" type="text" name="names" value="M,P">
+          Names <input id="names" size="30" type="text" name="names" value="M,P">
         </label>
       </div>
       <div>
@@ -210,22 +225,28 @@
       <div>
         <label for="current_position">
           Duration
-          <input id="duration" type="text" readonly value="0">
+          <input id="duration" type="text" size="15" readonly value="0">
         </label>
       </div>
       <div>
         <label for="current_position">
           Position
-          <input id="current_position" type="text" readonly value="0">
+          <input id="current_position" size="15" type="text" readonly value="0">
         </label>
       </div>
       <div>
         <label for="config_markonpause"><input type="checkbox" id="config_markonpause"> Mark on pause</label>
       </div>
+      <div>
+        <label for="analise_mode"><input type="checkbox" id="analise_mode"> Analise mode</label>
+      </div>
     </div>
   </div>
   <div class="transcription">
     <ol></ol>
+  </div>
+  <div class="start_action">
+    <button onclick="load(true)" id="load_from_browser_button">Load from browser</button>
   </div>
   <script src="script.js"></script>
 </body>
