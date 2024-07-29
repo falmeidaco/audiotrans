@@ -3,6 +3,7 @@ let audio_loaded = false;
 const audio = document.querySelector("audio");
 audio.addEventListener('loadedmetadata', (event) => {
   audio_loaded = true;
+  audio.dataset.loaded = 1;
   audio.playbackRate = parseFloat(document.querySelector('#playback_rate').value);
   document.querySelector('#duration').value = audio.duration;
   append();
@@ -146,33 +147,41 @@ function playpause() {
 };
 
 function markabreak() {
-  current_textarea = document.querySelector('textarea:focus');
-  if (current_textarea) {
-    if (!/\[\d+\.\d+\] ?$/g.test(current_textarea.value)) {
-      document.querySelector('textarea:focus').value = `${document.querySelector('textarea:focus').value.trim()} [${audio.currentTime.toFixed(4)}] `;
+  if (audio_loaded) {
+    current_textarea = document.querySelector('textarea:focus');
+    if (current_textarea) {
+      if (!/\[\d+\.\d+\] ?$/g.test(current_textarea.value)) {
+        document.querySelector('textarea:focus').value = `${document.querySelector('textarea:focus').value.trim()} [${audio.currentTime.toFixed(4)}] `;
+      }
     }
   }
 }
 
 function playlastmark() {
-  const textarea = document.querySelector('textarea:focus');
-  if (textarea) {
-    let marks = textarea.value.match(/\[\d+\.\d+\]/g);
-    if (marks.length > 0) {
-      audio.currentTime = parseFloat(marks[marks.length-1].replace(/[\[\]]/g,''));
-      audio.play();
+  if (audio_loaded) {
+    const textarea = document.querySelector('textarea:focus');
+    if (textarea) {
+      let marks = textarea.value.match(/\[\d+\.\d+\]/g);
+      if (marks.length > 0) {
+        audio.currentTime = parseFloat(marks[marks.length-1].replace(/[\[\]]/g,''));
+        audio.play();
+      }
     }
   }
 }
 
 function repeat() {
-  const pointer = document.querySelector('ol li:last-child');
-  audio.currentTime = parseFloat(pointer.dataset.position);
-  audio.play();
+  if (audio_loaded) {
+    const pointer = document.querySelector('ol li:last-child');
+    audio.currentTime = parseFloat(pointer.dataset.position);
+    audio.play();
+  }
 }
 
 function seek(value) {
-  audio.currentTime = audio.currentTime + parseFloat(value);
+  if (audio_loaded) {
+    audio.currentTime = audio.currentTime + parseFloat(value);
+  }
 }
 
 function append(data, before) {

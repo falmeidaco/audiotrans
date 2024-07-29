@@ -56,10 +56,26 @@
       background-color: white;
       z-index: 1;
     }
+    
+    .audio_container {
+      padding: 0 10px;
+      text-align: center;
+    }
 
-    .toolbar input[type="file"] {
+    #audio_file {
+      padding: 5px 10px;
+    }
+
+    .audio_container audio {
       display: none;
     }
+    .audio_container:has(audio[data-loaded]) #audio_file {
+      display: none;
+    }
+    .audio_container:has(audio[data-loaded]) audio {
+      display: block;
+    }
+    
 
     .toolbar audio {
       width: 100%;
@@ -170,7 +186,7 @@
     <p class="ctrlshift"><span>CTRL SHIFT D</span>Delete current</p>
   </div>
   <div class="toolbar">
-    <div>
+    <div class="audio_container">
       <input id="audio_file" type="file">
       <audio controls></audio>
     </div>
