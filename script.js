@@ -1,6 +1,7 @@
 let audio_loaded = false;
 
 const audio = document.querySelector("audio");
+const themes_container = document.querySelector('.analise_config_themes');
 audio.addEventListener('loadedmetadata', (event) => {
   audio_loaded = true;
   audio.dataset.loaded = 1;
@@ -53,7 +54,7 @@ document.addEventListener('keyup', event => {
 
 document.addEventListener('keydown', (event) => {
   let prevent_event = true;
-  
+
   /* Show shortcuts */
   if (event.ctrlKey || event.shiftKey) {
     document.querySelector('.shortcuts').style.display = 'block';
@@ -63,6 +64,7 @@ document.addEventListener('keydown', (event) => {
     item.classList.remove('h');
   });
 
+  // MARK: KEYBOARD EVENTS 
   /* CTRL SHIFT EVENTS */
   if (event.ctrlKey && event.shiftKey) {
     /* Highlight shortcuts */
@@ -90,8 +92,8 @@ document.addEventListener('keydown', (event) => {
         break;
       default: prevent_event = false;
     }
-  
-  /* SHIFT EVENTS */
+
+    /* SHIFT EVENTS */
   } else if (event.shiftKey) {
     /* Highlight shortcuts */
     document.querySelectorAll('.shortcuts p.shift').forEach(item => {
@@ -103,10 +105,12 @@ document.addEventListener('keydown', (event) => {
         break;
       case "ArrowDown": repeat();
         break;
+      case "KeyM": mark_analise();
+        break;
       default: prevent_event = false;
     }
 
-  /* CTRL EVENTS */
+    /* CTRL EVENTS */
   } else if (event.ctrlKey) {
     /* Highlight shortcuts */
     document.querySelectorAll('.shortcuts p.ctrl').forEach(item => {
@@ -143,6 +147,13 @@ document.addEventListener('keydown', (event) => {
   if (prevent_event) event.preventDefault();
 });
 
+function mark_analise() {
+  const selection = window.getSelection();
+  const text = selection.toString();
+  const element = selection.anchorNode.parentElement;
+  element.innerHTML = element.innerHTML.replace(text, `<span>${text}</span>`);
+}
+
 function playpause() {
   if (!audio_loaded) {
     audio_file.click();
@@ -176,7 +187,7 @@ function playlastmark() {
     if (textarea) {
       let marks = textarea.value.match(/\[\d+\.\d+\]/g);
       if (marks.length > 0) {
-        audio.currentTime = parseFloat(marks[marks.length-1].replace(/[\[\]]/g,''));
+        audio.currentTime = parseFloat(marks[marks.length - 1].replace(/[\[\]]/g, ''));
         audio.play();
       }
     }
@@ -203,7 +214,7 @@ function append(data, before) {
     name: '',
     position: audio.currentTime,
     text: '',
-    analise:'',
+    analise: '',
   }
   /* Overwrite defaults */
   if (data) {
@@ -217,7 +228,7 @@ function append(data, before) {
   /* Create node */
   const node = createNode({
     type: 'li',
-    attr:{'data-timestamp':values.timestamp},
+    attr: { 'data-timestamp': values.timestamp },
     content: [
       {
         type: 'div',
@@ -230,7 +241,7 @@ function append(data, before) {
                 /* Load names */
                 let option_values = document.querySelector('#names').value.split(',');
                 /* Parse name as options */
-                let options =  option_values.map(value => {
+                let options = option_values.map(value => {
                   let option = {
                     type: 'option',
                     attr: { value: value.toUpperCase() },
@@ -242,7 +253,7 @@ function append(data, before) {
                   }
                   return option;
                 });
-                return [{type:'option', attr:{value:''}, content:''}, ...options]
+                return [{ type: 'option', attr: { value: '' }, content: '' }, ...options]
               }(values.name))
             }
           },
@@ -280,7 +291,7 @@ function append(data, before) {
       },
       {
         type: 'div',
-        content: 
+        content:
           [
             {
               type: 'textarea',
@@ -289,8 +300,8 @@ function append(data, before) {
             },
             {
               type: 'div',
-              attr: {class:'analise'},
-              content: ((values.analise.trim() !== '') ? values.analise : values.text),
+              attr: { class: 'analise' },
+              content: ((values.analise.trim() !== '') ? '$html:' + values.analise : values.text),
               events: {
                 'dblclick': (e) => {
                   if (e.target.classList.contains('analise')) {
@@ -304,6 +315,9 @@ function append(data, before) {
                       save(true);
                     }
                   } else {
+                    const container = e.target.parentElement;
+                    const target = e.target;
+                    container.innerHTML = container.innerHTML.replace(target.outerHTML, target.innerHTML);
                   }
                 }
               }
@@ -364,13 +378,13 @@ function remaptabindex() {
     if (e.nextSibling) {
       let v1 = parseFloat(e.childNodes[0].childNodes[1].firstChild.value);
       let v2 = parseFloat(e.nextSibling.childNodes[0].childNodes[1].firstChild.value);
-      v3 = v2-v1;
+      v3 = v2 - v1;
     }
     if (parseInt(e.dataset.timestamp) > 0) {
       const d = new Date(parseInt(e.dataset.timestamp));
-      t = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+      t = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
     }
-    e.dataset.index = `${(i+1)} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)} | ${t}`;
+    e.dataset.index = `${(i + 1)} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)} | ${t}`;
     e.querySelector('textarea').setAttribute('tabindex', i + 1);
   });
 }
@@ -389,8 +403,8 @@ function formatTime(seconds) {
 
   // Format the time string
   var timeString = hours.toString().padStart(2, '0') + ":" +
-                   minutes.toString().padStart(2, '0') + ":" +
-                   seconds.toString().padStart(2, '0');
+    minutes.toString().padStart(2, '0') + ":" +
+    seconds.toString().padStart(2, '0');
 
   return timeString;
 }
@@ -418,12 +432,7 @@ function load(browser) {
   if (browser) {
     if (window.localStorage.hasOwnProperty('transcription')) {
       let data = JSON.parse(window.localStorage.getItem('transcription'));
-      document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';
-      document.querySelector('#names').value = data.names;
-      document.querySelector('#duration').value = data.duration;
-      data.transcription.forEach(d => {
-        append(d);
-      })
+      render_loaded(data);
     } else {
       alert('No data on local storage');
     }
@@ -438,23 +447,104 @@ function load(browser) {
     file_reader.onload = function (e) {
       reset();
       const data = JSON.parse(e.target.result);
-      document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';;
-      document.querySelector('#names').value = data.names;
-      document.querySelector('#duration').value = data.duration;
-      data.transcription.forEach(d => {
-        append(d);
-      });
+      render_loaded(data);
     }
   });
   input.click();
   document.querySelectorAll('load_from_browser_button').style.display = 'none';
 }
 
-function parse_data_to_json() { 
+function render_loaded(data) {
+  document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';
+  document.querySelector('#names').value = data.names;
+  document.querySelector('#duration').value = data.duration;
+  data.transcription.forEach(d => {
+    append(d);
+  });
+  if (data.hasOwnProperty('analise_config')) {
+    render_analise_themes_options(data.analise_config.themes);
+  } else {
+    render_analise_themes_options();
+  }
+}
+
+function render_analise_themes_options(themes) {
+  if (typeof themes === 'object') {
+    while (themes_container.firstChild)  {
+      themes_container.removeChild(themes_container.firstChild);
+    }
+    themes.forEach(theme => {
+      append_theme_option(theme);
+    })
+  }
+}
+
+function add_theme_option(){
+  append_theme_option({
+    background:'#000000',
+    color:'#FFFFFF',
+    label:'Theme name'
+  });
+}
+
+function append_theme_option(theme) {
+  const theme_node = createNode({
+    type: 'li',
+    events:{
+      'dblclick': (event) => {
+        console.log(event.target);
+      }
+    },
+    attr: {
+      'data-id': `theme-${theme.background.replace('#','')}-${theme.color.replace('#','')}`
+    },
+    content: [
+      {
+        type: 'label',
+        content: [
+          {
+            type: 'input',
+            attr:{
+              type: 'radio',
+              name:'theme-option'
+            }
+          },
+          {
+            type: 'input',
+            attr: {
+              type: 'color',
+              value: theme.background,
+            }
+          },
+          {
+            type: 'input',
+            attr: {
+              type: 'color',
+              value: theme.color,
+            }
+          },
+          {
+            type: 'input',
+            attr: {
+              type: 'text',
+              value: theme.label,
+            }
+          }
+        ]
+      }
+    ]
+  });
+  themes_container.appendChild(theme_node);
+}
+
+function parse_data_to_json() {
   let object_result = {
     name: document.querySelector('#name').value.trim(),
     names: document.querySelector('#names').value.trim(),
-    duration:`${(audio.duration || document.querySelector('#duration').value)}`,
+    duration: `${(audio.duration || document.querySelector('#duration').value)}`,
+    analise_config: {
+      themes: []
+    },
     transcription: []
   }
 
@@ -464,10 +554,21 @@ function parse_data_to_json() {
       name: e.querySelector('select').value,
       position: e.querySelector('input[name="position"]').value,
       text: e.querySelector('textarea').value,
+      analise: '$html:' + e.querySelector('.analise').innerHTML,
       timestamp: parseInt(e.dataset.timestamp)
     }
     object_result.transcription.push(o);
   });
+
+  const themes = document.querySelectorAll('.analise_config_themes li').forEach(item => {
+    object_result.analise_config.themes.push({
+      background: item.querySelectorAll('input[type="color"]')[0].value,
+      color: item.querySelectorAll('input[type="color"]')[1].value,
+      label: item.querySelectorAll('input[type="text"]')[0].value,
+    })
+  });
+
+  console.log(object_result);
 
   return object_result;
 }
@@ -542,11 +643,11 @@ ${content_text}
 function export_audio_segments() {
   const content = parse_data_to_json();
   let content_text = '';
-  for (let i = 0; i < content.transcription.length; i = i +1) {
-    let next = (content.transcription[(i+1)]) ? content.transcription[(i+1)].position : content.duration;
+  for (let i = 0; i < content.transcription.length; i = i + 1) {
+    let next = (content.transcription[(i + 1)]) ? content.transcription[(i + 1)].position : content.duration;
     let length = parseFloat(next) - parseFloat(content.transcription[i].position);
-    if (length <=0) length += 1;
-    content_text += `${(i+1)}_${content.transcription[i].name},${parseFloat(content.transcription[i].position).toFixed(3)},${parseFloat(length).toFixed(3)}\n`
+    if (length <= 0) length += 1;
+    content_text += `${(i + 1)}_${content.transcription[i].name},${parseFloat(content.transcription[i].position).toFixed(3)},${parseFloat(length).toFixed(3)}\n`
     //content_text += `ffmpeg -y -loglevel error -i "audio1.wav" -ss "${parseFloat(content.transcription[i].position).toFixed(3)}" -t "${parseFloat(length).toFixed(3)}" -q:a 0 "audio_segments/${(i+1)}_${content.transcription[i].name}.mp3"\n`
   }
   let csv_content = `id,start_time,length
@@ -594,7 +695,11 @@ function createNode(node) {
     if (typeof node.content === "string") {
       //nodeContent = document.createTextNode(node.content);
       //nodeElement.appendChild(nodeContent);
-      nodeElement.innerText = node.content;
+      if (/^\$html\:/.test(node.content)) {
+        nodeElement.innerHTML = node.content.replace(/\$html\:/g, '');
+      } else {
+        nodeElement.innerText = node.content;
+      }
     } else if (typeof node.content === "object") {
       if (node.content.constructor === Array) {
         for (i = 0; i < node.content.length; i += 1) {
@@ -619,6 +724,6 @@ function createNode(node) {
   return nodeElement;
 }
 
-function isDeviceiPad(){
+function isDeviceiPad() {
   return navigator.userAgent.match(/iPad/i);
 }
