@@ -99,6 +99,12 @@ ol li textarea {
     flex-grow: 1;
     flex-shrink: 0;
 }
+.analise_config_themes li {
+    padding: 3px 3px 3px 15px;
+}
+.analise_config_themes li:hover {
+    background-color: beige;
+}
  
 
 .toolbar {

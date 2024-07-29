@@ -1,5 +1,7 @@
 let audio_loaded = false;
 
+let next_scroll_element = 0;
+
 const audio = document.querySelector("audio");
 const themes_container = document.querySelector('.analise_config_themes');
 audio.addEventListener('loadedmetadata', (event) => {
@@ -57,13 +59,15 @@ document.addEventListener('keydown', (event) => {
   let prevent_event = true;
 
   /* Show shortcuts */
-  if (event.ctrlKey || event.shiftKey) {
-    document.querySelector('.shortcuts').style.display = 'block';
-    document.querySelector('ol').classList.add('info');
+  if (!analise_mode_control.checked) {
+    if (event.ctrlKey || event.shiftKey) {
+      document.querySelector('.shortcuts').style.display = 'block';
+      document.querySelector('ol').classList.add('info');
+    }
+    document.querySelectorAll('.shortcuts p.h').forEach(item => {
+      item.classList.remove('h');
+    });
   }
-  document.querySelectorAll('.shortcuts p.h').forEach(item => {
-    item.classList.remove('h');
-  });
 
   // MARK: KEYBOARD EVENTS 
   /* CTRL SHIFT EVENTS */
@@ -72,6 +76,7 @@ document.addEventListener('keydown', (event) => {
     document.querySelectorAll('.shortcuts p.ctrlshift').forEach(item => {
       item.classList.add('h');
     });
+
     switch (event.code) {
       case "ArrowLeft": seek(-1);
         break;
@@ -517,12 +522,16 @@ function append_theme_option(theme) {
   const theme_node = createNode({
     type: 'li',
     events: {
-      'dblclick': (event) => {
-        document.querySelectorAll(`.analise span.${id}`).forEach(item => {
-          let text = item.innerHTML;
-          item.parentElement.innerHTML = item.parentElement.innerHTML.replace(item.outerHTML, text);
-        });
-        document.querySelector(`li[data-id="${id}"]`).remove();
+      'dblclick': (e) => {
+        if (e.shiftKey) {
+          if (e.target.dataset['id']) {
+            document.querySelectorAll(`.analise span.${e.target.dataset.id}`).forEach(item => {
+              let text = item.innerHTML;
+              item.parentElement.innerHTML = item.parentElement.innerHTML.replace(item.outerHTML, text);
+            });
+            document.querySelector(`li[data-id="${e.target.dataset.id}"]`).remove();
+          }
+        }
       }
     },
     attr: {
@@ -571,6 +580,24 @@ function append_theme_option(theme) {
               type: 'text',
               value: theme.label,
             }
+          },
+          {
+            type: 'button',
+            content:`${document.querySelectorAll('span.'+id).length}`,
+            attr: {
+              'data-findnext': '0'
+            },
+            events: {
+              'click': (e) => {
+                let next = parseInt(e.target.dataset.findnext);
+                const elements = document.querySelectorAll('span.'+e.target.parentElement.parentElement.dataset.id);
+                if (next >= elements.length) {
+                  next = 0;
+                }
+                scroll_to_element(elements[next]);
+                e.target.dataset.findnext = next+1;
+              }
+            }
           }
         ]
       }
@@ -592,6 +619,7 @@ function handle_color_change(event_data, type) {
       item.style.color = '#' + color;
     });
     current.dataset.current = background;
+    current.parentElement.parentElement.dataset.id = `theme-${background}-${color}`;
   } else {
     current = event_data.target.parentElement.querySelectorAll('input[type="color"]')[1];
     document.querySelectorAll(`.analise span.theme-${background}-${current.dataset.current}`).forEach(item => {
@@ -601,6 +629,7 @@ function handle_color_change(event_data, type) {
       item.style.color = '#' + color;
     });
     current.dataset.current = color;
+    current.parentElement.parentElement.dataset.id = `theme-${background}-${color}`;
   }
 }
 
@@ -786,6 +815,16 @@ function createNode(node) {
     }
   }
   return nodeElement;
+}
+
+function scroll_to_element(element) {
+  if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function refresh_theme_count() {
+  document.querySelectorAll()
 }
 
 function isDeviceiPad() {
