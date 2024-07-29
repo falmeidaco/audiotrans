@@ -90,6 +90,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyA": analise_mode_control.click();
         break;
+      case "KeyM": mark_analise();
+        break;
       default: prevent_event = false;
     }
 
@@ -104,8 +106,6 @@ document.addEventListener('keydown', (event) => {
       case "ArrowUp": playpause();
         break;
       case "ArrowDown": repeat();
-        break;
-      case "KeyM": mark_analise();
         break;
       default: prevent_event = false;
     }
@@ -153,11 +153,13 @@ function mark_analise() {
     const text = selection.toString();
     if (text.trim() !== '') {
       let theme = document.querySelector('input[name="theme-option"]:checked');
+      const element = selection.anchorNode.parentElement;
       if (theme) {
         let theme_background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value.replace('#', '');
         let theme_color = theme.parentElement.querySelectorAll('input[type="color"]')[1].value.replace('#', '');
-        const element = selection.anchorNode.parentElement;
         element.innerHTML = element.innerHTML.replace(text, `<span style="background-color:#${theme_background}; color:#${theme_color}" class="theme-${theme_background}-${theme_color}">${text}</span>`);
+      } else {
+        element.innerHTML = element.innerHTML.replace(text, `<span>${text}</span>`);
       }
     }
   }
@@ -500,8 +502,12 @@ function append_theme_option(theme) {
   const id = `theme-${theme.background.replace('#','')}-${theme.color.replace('#','')}`;
   const theme_node = createNode({
     type: 'li',
-    events:{
+    events: {
       'dblclick': (event) => {
+        document.querySelectorAll(`.analise span.${id}`).forEach(item => {
+          let text = item.innerHTML;
+          item.parentElement.innerHTML = item.parentElement.innerHTML.replace(item.outerHTML, text);
+        });
         document.querySelector(`li[data-id="${id}"]`).remove();
       }
     },
@@ -521,16 +527,28 @@ function append_theme_option(theme) {
           },
           {
             type: 'input',
+            events: {
+              'change': (e) => {
+                handle_color_change(e, 'background');
+              }
+            },
             attr: {
               type: 'color',
               value: theme.background,
+              'data-current': theme.background.replace('#', '')
             }
           },
           {
             type: 'input',
+            events: {
+              'change': (e) => {
+                handle_color_change(e, 'color');
+              }
+            },
             attr: {
               type: 'color',
               value: theme.color,
+              'data-current': theme.color.replace('#', '')
             }
           },
           {
@@ -545,6 +563,31 @@ function append_theme_option(theme) {
     ]
   });
   themes_container.appendChild(theme_node);
+}
+
+function handle_color_change(event_data, type) {
+  let current = '';
+  let background = event_data.target.parentElement.querySelectorAll('input[type="color"]')[0].value.replace('#', '');
+  let color = event_data.target.parentElement.querySelectorAll('input[type="color"]')[1].value.replace('#', '');
+  if (type === 'background') {
+    current = event_data.target.parentElement.querySelectorAll('input[type="color"]')[0];
+    document.querySelectorAll(`.analise span.theme-${current.dataset.current}-${color}`).forEach(item => {
+      item.classList.remove(`theme-${current.dataset.current}-${color}`);
+      item.classList.add(`theme-${background}-${color}`);
+      item.style.background = '#' + background;
+      item.style.color = '#' + color;
+    });
+    current.dataset.current = background;
+  } else {
+    current = event_data.target.parentElement.querySelectorAll('input[type="color"]')[1];
+    document.querySelectorAll(`.analise span.theme-${background}-${current.dataset.current}`).forEach(item => {
+      item.classList.remove(`theme-${background}-${current.dataset.current}`);
+      item.classList.add(`theme-${background}-${color}`);
+      item.style.background = '#' + background;
+      item.style.color = '#' + color;
+    });
+    current.dataset.current = color;
+  }
 }
 
 function parse_data_to_json() {

@@ -40,6 +40,7 @@ ol li textarea {
 
 .transcription .analise {
     display: none;
+    line-height: 1.8rem;
 }
 
 .transcription.analise-mode textarea {
@@ -55,7 +56,12 @@ ol li textarea {
 }
 
 .analise span {
-    background-color: aqua;
+    background-color: beige;
+    box-shadow: -1px 1px 2px black;
+    padding: 2px 0;
+}
+.analise span:hover {
+    background-color: rgb(229, 170, 244);
 }
 
 .transcription.analise-mode {
