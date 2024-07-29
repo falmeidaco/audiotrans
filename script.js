@@ -37,6 +37,7 @@ window.requestAnimationFrame(refreshcurrentposition);
 const config_markonpause = document.querySelector('#config_markonpause');
 
 const analise_mode_control = document.querySelector('#analise_mode');
+const analise_apply_theme_control = document.querySelector('#analise_apply_theme_control');
 
 analise_mode_control.addEventListener('change', (event) => {
   if (event.target.checked) {
@@ -330,6 +331,20 @@ function append(data, before) {
                     const target = e.target;
                     container.innerHTML = container.innerHTML.replace(target.outerHTML, target.innerHTML);
                   }
+                },
+                'click': (e) => {
+                  if (!e.target.classList.contains('analise')) {
+                    if (analise_apply_theme_control.checked) {
+                      const theme = document.querySelector('input[name="theme-option"]:checked');
+                      if (theme) {
+                        console.log(e);
+                        let background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value;
+                        let color = theme.parentElement.querySelectorAll('input[type="color"]')[1].value;
+                        e.target.style.backgroundColor = background;
+                        e.target.style.color = color;
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -439,7 +454,6 @@ function reset() {
 }
 
 function load(browser) {
-
   if (browser) {
     if (window.localStorage.hasOwnProperty('transcription')) {
       let data = JSON.parse(window.localStorage.getItem('transcription'));
@@ -521,7 +535,7 @@ function append_theme_option(theme) {
           {
             type: 'input',
             attr:{
-              type: 'radio',
+              type: 'checkbox',
               name:'theme-option'
             }
           },
