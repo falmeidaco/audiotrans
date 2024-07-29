@@ -148,10 +148,19 @@ document.addEventListener('keydown', (event) => {
 });
 
 function mark_analise() {
-  const selection = window.getSelection();
-  const text = selection.toString();
-  const element = selection.anchorNode.parentElement;
-  element.innerHTML = element.innerHTML.replace(text, `<span>${text}</span>`);
+  if (analise_mode_control.checked) {
+    const selection = window.getSelection();
+    const text = selection.toString();
+    if (text.trim() !== '') {
+      let theme = document.querySelector('input[name="theme-option"]:checked');
+      if (theme) {
+        let theme_background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value.replace('#', '');
+        let theme_color = theme.parentElement.querySelectorAll('input[type="color"]')[1].value.replace('#', '');
+        const element = selection.anchorNode.parentElement;
+        element.innerHTML = element.innerHTML.replace(text, `<span style="background-color:#${theme_background}; color:#${theme_color}" class="theme-${theme_background}-${theme_color}">${text}</span>`);
+      }
+    }
+  }
 }
 
 function playpause() {
@@ -488,15 +497,16 @@ function add_theme_option(){
 }
 
 function append_theme_option(theme) {
+  const id = `theme-${theme.background.replace('#','')}-${theme.color.replace('#','')}`;
   const theme_node = createNode({
     type: 'li',
     events:{
       'dblclick': (event) => {
-        console.log(event.target);
+        document.querySelector(`li[data-id="${id}"]`).remove();
       }
     },
     attr: {
-      'data-id': `theme-${theme.background.replace('#','')}-${theme.color.replace('#','')}`
+      'data-id': id
     },
     content: [
       {
@@ -567,9 +577,6 @@ function parse_data_to_json() {
       label: item.querySelectorAll('input[type="text"]')[0].value,
     })
   });
-
-  console.log(object_result);
-
   return object_result;
 }
 
