@@ -59,15 +59,16 @@ document.addEventListener('keydown', (event) => {
   let prevent_event = true;
 
   /* Show shortcuts */
-  if (!analise_mode_control.checked) {
-    if (event.ctrlKey || event.shiftKey) {
+  if (event.ctrlKey || event.shiftKey) {
+    if (!analise_mode_control.checked) {
       document.querySelector('.shortcuts').style.display = 'block';
-      document.querySelector('ol').classList.add('info');
     }
-    document.querySelectorAll('.shortcuts p.h').forEach(item => {
-      item.classList.remove('h');
-    });
+    document.querySelector('ol').classList.add('info');
   }
+  
+  document.querySelectorAll('.shortcuts p.h').forEach(item => {
+    item.classList.remove('h');
+  });
 
   // MARK: KEYBOARD EVENTS 
   /* CTRL SHIFT EVENTS */
