@@ -178,9 +178,10 @@ function mark_analise() {
       let theme = document.querySelector('input[name="theme-option"]:checked');
       const element = selection.anchorNode.parentElement;
       if (theme) {
+        let cat = theme.parentElement.querySelectorAll('input[type="text"]')[0].value;
         let theme_background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value.replace('#', '');
         let theme_color = theme.parentElement.querySelectorAll('input[type="color"]')[1].value.replace('#', '');
-        element.innerHTML = element.innerHTML.replace(text, `<span style="background-color:#${theme_background}; color:#${theme_color}" class="theme-${theme_background}-${theme_color}">${text}</span>`);
+        element.innerHTML = element.innerHTML.replace(text, `<span data-cat="${cat}" style="background-color:#${theme_background}; color:#${theme_color}" class="theme-${theme_background}-${theme_color}">${text}</span>`);
         refresh_theme_count();
       } else {
         element.innerHTML = element.innerHTML.replace(text, `<span>${text}</span>`);

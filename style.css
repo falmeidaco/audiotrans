@@ -127,7 +127,16 @@ ol li textarea {
 .analise_config_themes li:hover {
     background-color: beige;
 }
- 
+.analise_config_themes input[type="color"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    border: 2px solid gray;
+    position: relative;
+    margin-right: 5px;
+    border-radius: 10px;
+}
 
 .toolbar {
     position: fixed;
