@@ -65,7 +65,7 @@ document.addEventListener('keydown', (event) => {
     }
     document.querySelector('ol').classList.add('info');
   }
-  
+
   document.querySelectorAll('.shortcuts p.h').forEach(item => {
     item.classList.remove('h');
   });
@@ -165,6 +165,7 @@ function mark_analise() {
         let theme_background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value.replace('#', '');
         let theme_color = theme.parentElement.querySelectorAll('input[type="color"]')[1].value.replace('#', '');
         element.innerHTML = element.innerHTML.replace(text, `<span style="background-color:#${theme_background}; color:#${theme_color}" class="theme-${theme_background}-${theme_color}">${text}</span>`);
+        refresh_theme_count();
       } else {
         element.innerHTML = element.innerHTML.replace(text, `<span>${text}</span>`);
       }
@@ -330,12 +331,12 @@ function append(data, before) {
                       e.target.previousSibling.value = e.target.innerText;
                       e.target.classList.remove('analise-edit');
                       e.target.removeAttribute('contenteditable');
-                      save(true);
                     }
                   } else {
                     const container = e.target.parentElement;
                     const target = e.target;
                     container.innerHTML = container.innerHTML.replace(target.outerHTML, target.innerHTML);
+                    refresh_theme_count();
                   }
                 },
                 'click': (e) => {
@@ -343,11 +344,13 @@ function append(data, before) {
                     if (analise_apply_theme_control.checked) {
                       const theme = document.querySelector('input[name="theme-option"]:checked');
                       if (theme) {
-                        console.log(e);
                         let background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value;
                         let color = theme.parentElement.querySelectorAll('input[type="color"]')[1].value;
                         e.target.style.backgroundColor = background;
                         e.target.style.color = color;
+                        e.target.className = '';
+                        e.target.classList.add(`theme-${background.replace('#','')}-${color.replace('#','')}`)
+                        refresh_theme_count();
                       }
                     }
                   }
@@ -531,6 +534,7 @@ function append_theme_option(theme) {
               item.parentElement.innerHTML = item.parentElement.innerHTML.replace(item.outerHTML, text);
             });
             document.querySelector(`li[data-id="${e.target.dataset.id}"]`).remove();
+            refresh_theme_count();
           }
         }
       }
@@ -825,7 +829,9 @@ function scroll_to_element(element) {
 }
 
 function refresh_theme_count() {
-  document.querySelectorAll()
+  document.querySelectorAll('.analise_config_themes button[data-findnext]').forEach(item => {
+    item.innerText = document.querySelectorAll('.analise span.'+item.parentElement.parentElement.dataset.id).length;
+  });
 }
 
 function isDeviceiPad() {
