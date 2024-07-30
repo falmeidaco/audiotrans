@@ -61,6 +61,14 @@ ol li textarea {
     padding: 2px 0;
     cursor: pointer;
 }
+
+.analise span span {
+    background-color:bisque;
+    box-shadow: -1px 1px 2px black;
+    padding: 2px 0;
+    cursor: pointer;
+}
+
 .analise span:hover {
     background-color: rgb(229, 170, 244) !important;
 }

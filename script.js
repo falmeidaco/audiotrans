@@ -1,9 +1,9 @@
 let audio_loaded = false;
-
 let next_scroll_element = 0;
 
-const audio = document.querySelector("audio");
 const themes_container = document.querySelector('.analise_config_themes');
+
+const audio = document.querySelector("audio");
 audio.addEventListener('loadedmetadata', (event) => {
   audio_loaded = true;
   audio.dataset.loaded = 1;
@@ -15,6 +15,10 @@ audio.addEventListener('playing', (e) => {
   refreshcurrentposition();
 });
 
+const audio_file = document.querySelector("#audio_file");
+audio_file.addEventListener('change', function (event) {
+  audio.src = URL.createObjectURL(audio_file.files[0]);
+});
 
 document.querySelector('#analise_block_mark_control').addEventListener('change', (e) => {
   if (e.target.checked) {
@@ -24,17 +28,12 @@ document.querySelector('#analise_block_mark_control').addEventListener('change',
   }
 });
 
-const audio_file = document.querySelector("#audio_file");
-audio_file.addEventListener('change', function (event) {
-  audio.src = URL.createObjectURL(audio_file.files[0]);
-});
 
 document.querySelector('#playback_rate').addEventListener('change', (e) => {
   if (audio_loaded) {
     audio.playbackRate = parseFloat(e.target.value);
   }
 });
-
 
 const current_position = document.querySelector('#current_position');
 function refreshcurrentposition() {
@@ -46,16 +45,20 @@ function refreshcurrentposition() {
 window.requestAnimationFrame(refreshcurrentposition);
 
 const config_markonpause = document.querySelector('#config_markonpause');
-
 const analise_mode_control = document.querySelector('#analise_mode');
 const analise_apply_theme_control = document.querySelector('#analise_apply_theme_control');
-
 analise_mode_control.addEventListener('change', (event) => {
   if (event.target.checked) {
     document.querySelector('.transcription').classList.add('analise-mode');
   } else {
     document.querySelector('.transcription').classList.remove('analise-mode');
   }
+});
+
+
+const load_from_file_input = document.querySelector('#load_from_file_input');
+load_from_file_input.addEventListener('change', (event) => {
+    load();
 });
 
 document.addEventListener('keyup', event => {
@@ -166,8 +169,8 @@ document.addEventListener('keydown', (event) => {
 function mark_analise() {
   if (analise_mode_control.checked) {
     const selection = window.getSelection();
-    const text = selection.toString();
-    if (text.trim() !== '') {
+    const text = selection.toString().trim();
+    if (text !== '') {
       let theme = document.querySelector('input[name="theme-option"]:checked');
       const element = selection.anchorNode.parentElement;
       if (theme) {
@@ -358,9 +361,12 @@ function append(data, before) {
                         e.target.style.backgroundColor = background;
                         e.target.style.color = color;
                         e.target.className = '';
-                        e.target.classList.add(`theme-${background.replace('#','')}-${color.replace('#','')}`)
-                        refresh_theme_count();
+                        e.target.classList.add(`theme-${background.replace('#','')}-${color.replace('#','')}`);
+                      } else {
+                        e.target.removeAttribute('style');
+                        e.target.removeAttribute('class');
                       }
+                      refresh_theme_count();
                     }
                   }
                 }
@@ -480,21 +486,15 @@ function load(browser) {
       alert('No data on local storage');
     }
     return;
-  }
-
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.addEventListener('change', event => {
+  } else {
     const file_reader = new FileReader();
-    file_reader.readAsText(input.files[0]);
+    file_reader.readAsText(load_from_file_input.files[0]);
     file_reader.onload = function (e) {
       reset();
       const data = JSON.parse(e.target.result);
       render_loaded(data);
     }
-  });
-  input.click();
-  document.querySelector('#load_from_browser_button').style.display = 'none';
+  }
 }
 
 function render_loaded(data) {
