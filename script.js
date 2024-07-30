@@ -121,12 +121,16 @@ document.addEventListener('keydown', (event) => {
       item.classList.add('h');
     });
 
-    switch (event.code) {
-      case "ArrowUp": playpause();
-        break;
-      case "ArrowDown": repeat();
-        break;
-      default: prevent_event = false;
+    if (!analise_mode_control.checked) {
+      switch (event.code) {
+        case "ArrowUp": playpause();
+          break;
+        case "ArrowDown": repeat();
+          break;
+        default: prevent_event = false;
+      }
+    } else {
+      prevent_event = false;
     }
 
     /* CTRL EVENTS */

@@ -76,6 +76,10 @@ ol li textarea {
 .transcription.analise-mode {
     width: calc(70vw - 20px);
 }
+.transcription.analise-mode .analise {
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+}
 
 .analise_config {
     display: none;
@@ -84,11 +88,11 @@ ol li textarea {
 .analise_config {
     display: none;   
     width: calc(30vw - 10px);
+    height: calc(100vh - 80px);
     position: fixed;
     right: 0;
     top:80px;
-    padding-top: 20px;
-    padding-right: 10px;
+    overflow-y: scroll;
 }
 .transcription.analise-mode+.analise_config {
     display: block;
