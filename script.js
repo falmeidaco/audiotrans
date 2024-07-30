@@ -15,6 +15,15 @@ audio.addEventListener('playing', (e) => {
   refreshcurrentposition();
 });
 
+
+document.querySelector('#analise_block_mark_control').addEventListener('change', (e) => {
+  if (e.target.checked) {
+    document.querySelector('.transcription').classList.add('analise-mode-block-mark');
+  } else {
+    document.querySelector('.transcription').classList.remove('analise-mode-block-mark');
+  }
+});
+
 const audio_file = document.querySelector("#audio_file");
 audio_file.addEventListener('change', function (event) {
   audio.src = URL.createObjectURL(audio_file.files[0]);
@@ -485,7 +494,7 @@ function load(browser) {
     }
   });
   input.click();
-  document.querySelectorAll('load_from_browser_button').style.display = 'none';
+  document.querySelector('#load_from_browser_button').style.display = 'none';
 }
 
 function render_loaded(data) {
