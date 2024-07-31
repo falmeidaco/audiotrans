@@ -654,7 +654,7 @@ function append_theme_option(theme) {
 
 function handle_color_change(input) {
   const theme_id = input.parentElement.parentElement.dataset.id;
-  const color_background = input.parentElement.querySelectorAll('input[type="color"]')[0];
+  const color_background = input.parentElement.querySelectorAll('input[type="color"]')[0].value;
   const color_text = input.parentElement.querySelectorAll('input[type="color"]')[1].value;
   document.querySelectorAll(`.analise span[data-theme-id='${theme_id}']`).forEach(item => {
     item.style.backgroundColor = color_background;
