@@ -60,6 +60,23 @@ ol li textarea {
     box-shadow: -1px 1px 2px black;
     padding: 2px 0;
     cursor: pointer;
+    position: relative;
+}
+.analise span[data-theme-label]::before {
+    position: absolute;
+    display: block;
+    top: -10px;
+    left: 0;
+    content:attr(data-theme-label);
+    font-size: .7rem;
+    background-color:black;
+    color: white;
+    height: 12px;
+    line-height: 1rem;
+    padding: 1px 4px;
+    text-wrap:nowrap;
+    box-shadow: none;
+    border-radius: 3px 3px 0 0;
 }
 
 .analise span span {
@@ -136,6 +153,10 @@ ol li textarea {
     position: relative;
     margin-right: 5px;
     border-radius: 10px;
+}
+.analise_config_themes input[type="text"].pending {
+    background-color:bisque;
+    font-style: italic;
 }
 
 .toolbar {

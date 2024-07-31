@@ -58,7 +58,7 @@ analise_mode_control.addEventListener('change', (event) => {
 
 const load_from_file_input = document.querySelector('#load_from_file_input');
 load_from_file_input.addEventListener('change', (event) => {
-    load();
+  load();
 });
 
 document.addEventListener('keyup', event => {
@@ -361,15 +361,17 @@ function append(data, before) {
                     if (analise_apply_theme_control.checked) {
                       const theme = document.querySelector('input[name="theme-option"]:checked');
                       if (theme) {
-                        let background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value;
-                        let color = theme.parentElement.querySelectorAll('input[type="color"]')[1].value;
-                        e.target.style.backgroundColor = background;
-                        e.target.style.color = color;
-                        e.target.className = '';
-                        e.target.classList.add(`theme-${background.replace('#','')}-${color.replace('#','')}`);
+                        let color_background = theme.parentElement.querySelectorAll('input[type="color"]')[0].value;
+                        let color_text = theme.parentElement.querySelectorAll('input[type="color"]')[1].value;
+                        let theme_label = theme.parentElement.querySelectorAll('input[type="text"]')[0].value;
+                        e.target.style.backgroundColor = color_background;
+                        e.target.style.color = color_text;
+                        e.target.dataset.themeId = text_friendly(theme_label);
+                        e.target.dataset.themeLabel = theme_label;
                       } else {
+                        e.target.removeAttribute('data-theme-id');
+                        e.target.removeAttribute('data-theme-label');
                         e.target.removeAttribute('style');
-                        e.target.removeAttribute('class');
                       }
                       refresh_theme_count();
                     }
@@ -518,7 +520,7 @@ function render_loaded(data) {
 
 function render_analise_themes_options(themes) {
   if (typeof themes === 'object') {
-    while (themes_container.firstChild)  {
+    while (themes_container.firstChild) {
       themes_container.removeChild(themes_container.firstChild);
     }
     themes.forEach(theme => {
@@ -527,23 +529,23 @@ function render_analise_themes_options(themes) {
   }
 }
 
-function add_theme_option(){
+function add_theme_option() {
   append_theme_option({
-    background:'#000000',
-    color:'#FFFFFF',
-    label:'Theme name'
+    background: '#000000',
+    color: '#FFFFFF',
+    label: `Theme ${document.querySelectorAll('.analise_config_themes li').length + 1}`
   });
 }
 
 function append_theme_option(theme) {
-  const id = `theme-${theme.background.replace('#','')}-${theme.color.replace('#','')}`;
+  const theme_id = text_friendly(theme.label);
   const theme_node = createNode({
     type: 'li',
     events: {
       'dblclick': (e) => {
         if (e.shiftKey) {
           if (e.target.dataset['id']) {
-            document.querySelectorAll(`.analise span.${e.target.dataset.id}`).forEach(item => {
+            document.querySelectorAll(`.analise span[data-theme-id='${e.target.dataset.id}']`).forEach(item => {
               let text = item.innerHTML;
               item.parentElement.innerHTML = item.parentElement.innerHTML.replace(item.outerHTML, text);
             });
@@ -554,7 +556,7 @@ function append_theme_option(theme) {
       }
     },
     attr: {
-      'data-id': id
+      'data-id': theme_id
     },
     content: [
       {
@@ -562,39 +564,64 @@ function append_theme_option(theme) {
         content: [
           {
             type: 'input',
-            attr:{
+            attr: {
               type: 'checkbox',
-              name:'theme-option'
+              name: 'theme-option'
             }
           },
           {
             type: 'input',
             events: {
               'change': (e) => {
-                handle_color_change(e, 'background');
+                handle_color_change(e.target);
               }
             },
             attr: {
               type: 'color',
-              value: theme.background,
-              'data-current': theme.background.replace('#', '')
+              value: theme.background
             }
           },
           {
             type: 'input',
             events: {
               'change': (e) => {
-                handle_color_change(e, 'color');
+                handle_color_change(e.target);
               }
             },
             attr: {
               type: 'color',
-              value: theme.color,
-              'data-current': theme.color.replace('#', '')
+              value: theme.color
             }
           },
           {
             type: 'input',
+            events: {
+              'keydown': (e) => {
+                const current_id = e.target.parentElement.parentElement.dataset.id;
+                if (e.key.toLowerCase() === 'enter') {
+                  let new_label = e.target.value.trim();
+                  let new_id = text_friendly(new_label);
+                  const duplicated = document.querySelectorAll(`.analise_config_themes li[data-id='${new_id}']`).length;
+                  if (duplicated > 0) {
+                    new_label = new_label + ' ' + (duplicated+1)
+                    new_id = new_id + '_' + (duplicated+1)
+                  }
+                  document.querySelectorAll(`.analise span[data-theme-id='${current_id}']`).forEach(item => {
+                    item.dataset.themeId = new_id;
+                    item.dataset.themeLabel = new_label;
+                  });
+                  e.target.parentElement.parentElement.dataset.id = new_id;
+                  e.target.value = new_label;
+                  e.target.classList.remove('pending');
+                } else {
+                  if (text_friendly(e.target.value) !== current_id) {
+                    e.target.classList.add('pending');
+                  } else {
+                    e.target.classList.remove('pending');
+                  }
+                }
+              },
+            },
             attr: {
               type: 'text',
               value: theme.label,
@@ -602,19 +629,19 @@ function append_theme_option(theme) {
           },
           {
             type: 'button',
-            content:`${document.querySelectorAll('span.'+id).length}`,
+            content: `${document.querySelectorAll(`span[data-theme-id='${theme_id}']`).length}`,
             attr: {
               'data-findnext': '0'
             },
             events: {
               'click': (e) => {
                 let next = parseInt(e.target.dataset.findnext);
-                const elements = document.querySelectorAll('span.'+e.target.parentElement.parentElement.dataset.id);
+                const elements = document.querySelectorAll('span.' + e.target.parentElement.parentElement.dataset.id);
                 if (next >= elements.length) {
                   next = 0;
                 }
                 scroll_to_element(elements[next]);
-                e.target.dataset.findnext = next+1;
+                e.target.dataset.findnext = next + 1;
               }
             }
           }
@@ -625,31 +652,14 @@ function append_theme_option(theme) {
   themes_container.appendChild(theme_node);
 }
 
-function handle_color_change(event_data, type) {
-  let current = '';
-  let background = event_data.target.parentElement.querySelectorAll('input[type="color"]')[0].value.replace('#', '');
-  let color = event_data.target.parentElement.querySelectorAll('input[type="color"]')[1].value.replace('#', '');
-  if (type === 'background') {
-    current = event_data.target.parentElement.querySelectorAll('input[type="color"]')[0];
-    document.querySelectorAll(`.analise span.theme-${current.dataset.current}-${color}`).forEach(item => {
-      item.classList.remove(`theme-${current.dataset.current}-${color}`);
-      item.classList.add(`theme-${background}-${color}`);
-      item.style.background = '#' + background;
-      item.style.color = '#' + color;
-    });
-    current.dataset.current = background;
-    current.parentElement.parentElement.dataset.id = `theme-${background}-${color}`;
-  } else {
-    current = event_data.target.parentElement.querySelectorAll('input[type="color"]')[1];
-    document.querySelectorAll(`.analise span.theme-${background}-${current.dataset.current}`).forEach(item => {
-      item.classList.remove(`theme-${background}-${current.dataset.current}`);
-      item.classList.add(`theme-${background}-${color}`);
-      item.style.background = '#' + background;
-      item.style.color = '#' + color;
-    });
-    current.dataset.current = color;
-    current.parentElement.parentElement.dataset.id = `theme-${background}-${color}`;
-  }
+function handle_color_change(input) {
+  const theme_id = input.parentElement.parentElement.dataset.id;
+  const color_background = input.parentElement.querySelectorAll('input[type="color"]')[0];
+  const color_text = input.parentElement.querySelectorAll('input[type="color"]')[1].value;
+  document.querySelectorAll(`.analise span[data-theme-id='${theme_id}']`).forEach(item => {
+    item.style.backgroundColor = color_background;
+    item.style.color = color_text;
+  });
 }
 
 function parse_data_to_json() {
@@ -838,16 +848,29 @@ function createNode(node) {
 
 function scroll_to_element(element) {
   if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 
 function refresh_theme_count() {
   document.querySelectorAll('.analise_config_themes button[data-findnext]').forEach(item => {
-    item.innerText = document.querySelectorAll('.analise span.'+item.parentElement.parentElement.dataset.id).length;
+    item.innerText = document.querySelectorAll(`.analise span[data-theme-id='${item.parentElement.parentElement.dataset.id}']`).length;
   });
 }
 
 function isDeviceiPad() {
   return navigator.userAgent.match(/iPad/i);
+}
+
+function text_friendly(input) {
+  return input.toString()               // Convert to string
+    .normalize('NFD')               // Change diacritics
+    .replace(/[\u0300-\u036f]/g, '') // Remove illegal characters
+    .replace(/\s+/g, '-')            // Change whitespace to dashes
+    .toLowerCase()                  // Change to lowercase
+    .replace(/&/g, '-and-')          // Replace ampersand
+    .replace(/[^a-z0-9\-]/g, '')     // Remove anything that is not a letter, number or dash
+    .replace(/-+/g, '-')             // Remove duplicate dashes
+    .replace(/^-*/, '')              // Remove starting dashes
+    .replace(/-*$/, '');             // Remove trailing dashes
 }
