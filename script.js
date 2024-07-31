@@ -636,7 +636,7 @@ function append_theme_option(theme) {
             events: {
               'click': (e) => {
                 let next = parseInt(e.target.dataset.findnext);
-                const elements = document.querySelectorAll('span.' + e.target.parentElement.parentElement.dataset.id);
+                const elements = document.querySelectorAll(`span[data-theme-id='${e.target.parentElement.parentElement.dataset.id}']`);
                 if (next >= elements.length) {
                   next = 0;
                 }
