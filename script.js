@@ -725,14 +725,73 @@ function export_json(content) {
 
 function export_html(content) {
   let content_text = '';
+  let html_content = '';
   let i = 1;
-  if (content) {
-    content.transcription.map(t => {
-      content_text += `<tr><td><p>${i}</p></td><td><p>${t.name}</p></td><td><p>${t.text}</p></td></tr>\n`;
-      i++;
+  if (analise_mode_control.checked) {
+
+    const transcription = document.querySelectorAll('.transcription li');
+    let line_id = 1;
+    transcription.forEach(line => {
+      const speaker = line.querySelector('select').value;
+      const segments = line.querySelectorAll('span[data-theme-id');
+      let segment_id = 1;
+      segments.forEach(segment => {
+        content_text += `
+        <tr>
+          <td>${line_id}</td>
+          <td>${speaker}</td>
+          <td>${segment_id}</td>
+          <td>${segment.dataset.themeId}</td>
+          <td>${((segment.dataset['theme-label'])?segment.dataset['theme-label']:"")}</td>
+          <td>${((segment.parentElement.nodeName.toLocaleLowerCase()=="span")?"L":"")}</td>
+          <td>${segment.innerHTML}</td>
+        </tr>`;
+        // console.log(line_id, 
+        //             speaker, 
+        //             segment_id, 
+        //             segment.dataset.themeId,
+        //             ((segment.dataset['theme-label'])?segment.dataset['theme-label']:""),
+        //             ((segment.nodeName.toLocaleLowerCase()=="span")?"L":""),
+        //             segment.innerHTML
+        //           );
+        segment_id+=1;
+      });
+      line_id+=1;
     });
-  }
-  let html_content = `<!DOCTYPE html>
+    html_content = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trascrição codificada</title>
+<style>
+td,th { vertical-align:top; }
+tr:nth-child(odd) { background-color:lightgray; }
+span span { font-weight: 500; }
+</style>
+</head>
+<body>
+<table>
+<tr>
+  <th>#S</th>
+  <th>Nome</th>
+  <th>#T</th>
+  <th>Tema ID</th>
+  <th>Tema</th>
+  <th>F</th>
+  <th>Trecho</th>
+</tr>
+${content_text}
+</table>
+</body>
+</html>`;
+  } else {
+    if (content) {
+      content.transcription.map(t => {
+        content_text += `<tr><td><p>${i}</p></td><td><p>${t.name}</p></td><td><p>${t.text}</p></td></tr>\n`;
+        i++;
+      });
+      html_content = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -750,6 +809,9 @@ ${content_text}
 </table>
 </body>
 </html>`;
+    }
+  }
+
   const a = document.createElement('a');
   const blob = new Blob([html_content], { type: "text/html" });
   const clickEvent = new MouseEvent("click", {
