@@ -271,3 +271,34 @@ ol li textarea {
         left: 0;
     }
 }
+
+.theme_modal {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    width: 200px;
+    z-index: 10;
+    background-color: gray;;
+    padding: 10px;
+    border-radius: 5px;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+.show_theme_modal {
+    display: block;
+}
+.theme_modal div {
+    margin-bottom: 5px;
+}
+.theme_modal .themes  {
+    display: flex;
+    flex-direction: column;
+}
+.theme_modal .themes * {
+    margin-bottom: 5px;
+
+}
+.theme_modal .options {
+    display: flex;
+    justify-content: space-between;
+}

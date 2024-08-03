@@ -1,4 +1,41 @@
 let audio_loaded = false;
+let current_mark;
+
+document.querySelector('#theme_save_button').addEventListener('click', (e) => {
+  let themes = document.querySelector('#new_theme_label').value.trim();
+  document.querySelectorAll('.theme_modal select').forEach(item => {
+    if (item.value.trim() !== '') {
+      themes += '; ' + item.value;
+    }
+  });
+  themes = themes.trim().replace(/(^;|;$)/, '').trim();
+  if (themes.trim()!=='') {
+    current_mark.dataset.themeLabel = themes;
+  } else {
+    current_mark.removeAttribute('data-theme-label');
+  }
+  process_themes();
+  open_hide_modal();
+});
+
+document.querySelector('#theme_cancel_button').addEventListener('click', (e) => {
+  open_hide_modal();
+});
+
+document.querySelector('#theme_reset_button').addEventListener('click', (e) => {
+  current_mark.removeAttribute('data-theme-label');
+  process_themes();
+  open_hide_modal();
+});
+
+function open_hide_modal() {
+  const modal = document.querySelector('.theme_modal');
+  if (modal.classList.contains('show_theme_modal')) {
+    modal.classList.remove('show_theme_modal');
+  } else {
+    modal.classList.add('show_theme_modal');
+  }
+}
 
 const audio = document.querySelector("audio");
 audio.addEventListener('loadedmetadata', (event) => {
@@ -323,6 +360,8 @@ function append(data, before) {
                       save(true);
                     }
                   } else {
+                    current_mark = e.target;
+                    open_theme_modal(e.target);
                   }
                 }
               }
@@ -339,6 +378,90 @@ function append(data, before) {
     document.querySelector('ol li:last-child textarea').focus();
   }
   remaptabindex();
+}
+
+function open_theme_modal(current) {
+  current_mark = current;
+  const modal = document.querySelector('.theme_modal');
+  const modal_themes = modal.querySelector('.themes');
+  let themes = []; 
+  document.querySelectorAll('.analise_config_themes li').forEach(item => {
+    themes.push(item.dataset.themeLabel);
+  })
+  /* Reset modal */
+  modal.querySelector('#new_theme_label').value = '';
+  modal.querySelectorAll('select').forEach(select => select.remove());
+
+  if (current.dataset.hasOwnProperty('themeLabel')) {
+    let current_labels = current.dataset.themeLabel.split(";");
+    current_labels.forEach(current_label => {
+      modal_themes.appendChild(createNode({
+        type:'select',
+        content:(function() {
+          let options = [{
+            type:'option',
+            content: '--- Select one ---',
+            attr: {
+              value: ''
+            }
+          }];
+          themes.forEach(theme => {
+            options.push({
+              type: 'option',
+              content: theme,
+              attr:(function() {
+                if (theme == current_label.trim()) {
+                  return {
+                    value:theme,
+                    selected:'selected'
+                  }
+                } else {
+                  return {
+                    value:theme
+                  }
+                }
+              }())
+            })
+          })
+          return options;
+        }())
+      }))      
+    }); 
+  }
+  append_theme_blank_option(modal_themes, themes);
+  open_hide_modal();
+}
+
+function append_theme_blank_option(modal_themes, themes) {
+  modal_themes.appendChild(createNode({
+    type:'select',
+    events: {
+      change: (e) => {
+        if (e.target.value.trim()!=='') {
+          append_theme_blank_option(modal_themes, themes)
+        }
+      }
+    },
+    content:(function() {
+      let options = [{
+        type:'option',
+        content: '--- Select one ---',
+        attr: {
+          value: ''
+        }
+      }];
+      themes.forEach(theme => {
+        options.push({
+          type: 'option',
+          content: theme,
+          attr:{
+            value:theme
+          }
+        })
+      })
+      return options;
+    }())
+  }))
 }
 
 function select(target) {
@@ -505,18 +628,22 @@ function render_theme_list(themes) {
     list_elements.appendChild(createNode({
       type: 'li',
       attr: {
-        'data-theme-id': theme
+        'data-theme-id': theme,
+        'data-theme-label': themes[theme].label
       },
       content: `${themes[theme].label} (${themes[theme].count})`
     }));
   }
 }
 
-function parse_data_to_json() { 
+function parse_data_to_json() {
   let object_result = {
     name: document.querySelector('#name').value.trim(),
     names: document.querySelector('#names').value.trim(),
-    duration:`${(audio.duration || document.querySelector('#duration').value)}`,
+    duration: `${(audio.duration || document.querySelector('#duration').value)}`,
+    analise_config: {
+      themes: []
+    },
     transcription: []
   }
 
@@ -526,11 +653,11 @@ function parse_data_to_json() {
       name: e.querySelector('select').value,
       position: e.querySelector('input[name="position"]').value,
       text: e.querySelector('textarea').value,
+      analise: '$html:' + e.querySelector('.analise').innerHTML,
       timestamp: parseInt(e.dataset.timestamp)
     }
     object_result.transcription.push(o);
   });
-
   return object_result;
 }
 
