@@ -89,6 +89,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyL": load();
         break;
+      case "KeyM": mark_analise();
+        break;
       case "Enter": append(null, true);
         break;
       case "KeyA": analise_mode_control.click();
@@ -193,6 +195,18 @@ function repeat() {
     const pointer = document.querySelector('ol li:last-child');
     audio.currentTime = parseFloat(pointer.dataset.position);
     audio.play();
+  }
+}
+
+function mark_analise() {
+  if (analise_mode_control.checked) {
+    const selection = window.getSelection();
+    const text = selection.toString().trim();
+    if (text !== '') {
+      let theme = document.querySelector('input[name="theme-option"]:checked');
+      const element = selection.anchorNode.parentElement;
+      element.innerHTML = element.innerHTML.replace(text, `<span>${text}</span>`);
+    }
   }
 }
 
