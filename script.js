@@ -349,19 +349,26 @@ function append(data, before) {
               content: ((values.analise.trim() !== '') ? values.analise : values.text),
               events: {
                 'dblclick': (e) => {
-                  if (e.target.classList.contains('analise')) {
-                    if (!e.target.classList.contains('analise-edit')) {
-                      e.target.classList.add('analise-edit');
-                      e.target.setAttribute('contenteditable', true);
-                    } else {
-                      e.target.previousSibling.value = e.target.innerText;
-                      e.target.classList.remove('analise-edit');
-                      e.target.removeAttribute('contenteditable');
-                      save(true);
-                    }
+                  if (e.shiftKey) {
+                    const container = e.target.parentElement;
+                    const target = e.target;
+                    container.innerHTML = container.innerHTML.replace(target.outerHTML, target.innerHTML);
+                    process_themes();
                   } else {
-                    current_mark = e.target;
-                    open_theme_modal(e.target);
+                    if (e.target.classList.contains('analise')) {
+                      if (!e.target.classList.contains('analise-edit')) {
+                        e.target.classList.add('analise-edit');
+                        e.target.setAttribute('contenteditable', true);
+                      } else {
+                        e.target.previousSibling.value = e.target.innerText;
+                        e.target.classList.remove('analise-edit');
+                        e.target.removeAttribute('contenteditable');
+                        save(true);
+                      }
+                    } else {
+                      current_mark = e.target;
+                      open_theme_modal(e.target);
+                    }
                   }
                 }
               }
