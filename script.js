@@ -787,9 +787,20 @@ ${content_text}
 </html>`;
   } else {
     if (content) {
-      content.transcription.map(t => {
-        content_text += `<tr><td><p>${i}</p></td><td><p>${t.name}</p></td><td><p>${t.text}</p></td></tr>\n`;
-        i++;
+      const transcription = document.querySelectorAll('.transcription li');
+      let line_id = 1;
+      transcription.forEach(line => {
+        if (line.querySelectorAll('span').length>0) {
+          let segment_index = 1;
+          line.querySelectorAll('span').forEach(segment => {
+            if (segment.dataset.hasOwnProperty('theme-id')) {
+              segment.dataset.index = `${segment_index}`;
+              segment_index+=1;
+            }
+          });
+        }
+        content_text += `<tr><td><p>${line_id}</p></td><td><p>${line.querySelector('select').value}</p></td><td><p>${line.querySelector('.analise').innerHTML.replace(/style\=\"[\w\d\(\)\-\,\:\; ]+\"/g, '')}</p></td></tr>\n`;
+        line_id += 1;
       });
       html_content = `<!DOCTYPE html>
 <html>
@@ -800,6 +811,9 @@ ${content_text}
 <style>
 td,th { vertical-align:top; }
 tr:nth-child(odd) { background-color:lightgray; }
+span::before {content:'[[';font-weight:bold;}
+span::after {content:']]';font-weight:bold;}
+span[data-theme-id]::before { content:"[["attr(data-index)"] "; }
 </style>
 </head>
 <body>
