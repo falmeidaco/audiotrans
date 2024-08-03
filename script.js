@@ -17,6 +17,11 @@ audio_file.addEventListener('change', function (event) {
   audio.src = URL.createObjectURL(audio_file.files[0]);
 });
 
+const load_from_file_input = document.querySelector('#load_from_file_input');
+load_from_file_input.addEventListener('change', (event) => {
+  load();
+});
+
 document.querySelector('#playback_rate').addEventListener('change', (e) => {
   if (audio_loaded) {
     audio.playbackRate = parseFloat(e.target.value);
@@ -414,40 +419,37 @@ function reset() {
 }
 
 function load(browser) {
-
   if (browser) {
     if (window.localStorage.hasOwnProperty('transcription')) {
       let data = JSON.parse(window.localStorage.getItem('transcription'));
-      document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';
-      document.querySelector('#names').value = data.names;
-      document.querySelector('#duration').value = data.duration;
-      data.transcription.forEach(d => {
-        append(d);
-      })
+      render_loaded(data);
     } else {
       alert('No data on local storage');
     }
     return;
-  }
-
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.addEventListener('change', event => {
+  } else {
     const file_reader = new FileReader();
-    file_reader.readAsText(input.files[0]);
+    file_reader.readAsText(load_from_file_input.files[0]);
     file_reader.onload = function (e) {
       reset();
       const data = JSON.parse(e.target.result);
-      document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';;
-      document.querySelector('#names').value = data.names;
-      document.querySelector('#duration').value = data.duration;
-      data.transcription.forEach(d => {
-        append(d);
-      });
+      render_loaded(data);
     }
+  }
+}
+
+function render_loaded(data) {
+  document.querySelector('#name').value = (data.hasOwnProperty('name')) ? data.name : '';
+  document.querySelector('#names').value = data.names;
+  document.querySelector('#duration').value = data.duration;
+  data.transcription.forEach(d => {
+    append(d);
   });
-  input.click();
-  document.querySelectorAll('load_from_browser_button').style.display = 'none';
+  // if (data.hasOwnProperty('analise_config')) {
+  //   render_analise_themes_options(data.analise_config.themes);
+  // } else {
+  //   render_analise_themes_options();
+  // }
 }
 
 function parse_data_to_json() { 
@@ -594,7 +596,11 @@ function createNode(node) {
     if (typeof node.content === "string") {
       //nodeContent = document.createTextNode(node.content);
       //nodeElement.appendChild(nodeContent);
-      nodeElement.innerText = node.content;
+      if (/^\$html\:/.test(node.content)) {
+        nodeElement.innerHTML = node.content.replace(/\$html\:/g, '');
+      } else {
+        nodeElement.innerText = node.content;
+      }
     } else if (typeof node.content === "object") {
       if (node.content.constructor === Array) {
         for (i = 0; i < node.content.length; i += 1) {
@@ -621,4 +627,23 @@ function createNode(node) {
 
 function isDeviceiPad(){
   return navigator.userAgent.match(/iPad/i);
+}
+
+function scroll_to_element(element) {
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function text_friendly(input) {
+  return input.toString()               // Convert to string
+    .normalize('NFD')               // Change diacritics
+    .replace(/[\u0300-\u036f]/g, '') // Remove illegal characters
+    .replace(/\s+/g, '-')            // Change whitespace to dashes
+    .toLowerCase()                  // Change to lowercase
+    .replace(/&/g, '-and-')          // Replace ampersand
+    .replace(/[^a-z0-9\-]/g, '')     // Remove anything that is not a letter, number or dash
+    .replace(/-+/g, '-')             // Remove duplicate dashes
+    .replace(/^-*/, '')              // Remove starting dashes
+    .replace(/-*$/, '');             // Remove trailing dashes
 }
