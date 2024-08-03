@@ -459,11 +459,57 @@ function render_loaded(data) {
   data.transcription.forEach(d => {
     append(d);
   });
+  process_themes();
   // if (data.hasOwnProperty('analise_config')) {
   //   render_analise_themes_options(data.analise_config.themes);
   // } else {
   //   render_analise_themes_options();
   // }
+}
+
+function process_themes() {
+  const current_themes = document.querySelectorAll('.analise span[data-theme-label');
+  let themes = {};
+  current_themes.forEach(theme => {
+    theme.removeAttribute('data-theme-id');
+    theme.removeAttribute('style');
+    theme_labels = theme.dataset.themeLabel.split(";");
+    theme_labels.forEach(theme_label => {
+      theme_id = text_friendly(theme_label.trim());
+      if (!themes[theme_id]) {
+        themes[theme_id] = {
+          label: theme_label,
+          count: 1
+        }
+      } else {
+        themes[theme_id].count += 1;
+      }
+    });
+  });
+  const ordered = Object.keys(themes).sort().reduce(
+    (obj, key) => { 
+      obj[key] = themes[key]; 
+      return obj;
+    }, 
+    {}
+  );
+  render_theme_list(ordered);
+}
+
+function render_theme_list(themes) {
+  const list_elements = document.querySelector('#analise_config_themes_container');
+  while(list_elements.firstChild) {
+    list_elements.removeChild(list_elements.firstChild);
+  }
+  for (theme in themes) {
+    list_elements.appendChild(createNode({
+      type: 'li',
+      attr: {
+        'data-theme-id': theme
+      },
+      content: `${themes[theme].label} (${themes[theme].count})`
+    }));
+  }
 }
 
 function parse_data_to_json() { 
