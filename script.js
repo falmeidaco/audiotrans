@@ -2,12 +2,13 @@ let audio_loaded = false;
 let current_mark;
 
 document.querySelector('#theme_save_button').addEventListener('click', (e) => {
-  let themes = document.querySelector('#new_theme_label').value.trim();
+  let themes = '';
   document.querySelectorAll('.theme_modal select').forEach(item => {
     if (item.value.trim() !== '') {
-      themes += '; ' + item.value;
+      themes +=  item.value + '; ';
     }
   });
+  themes += document.querySelector('#new_theme_label').value.trim();
   themes = themes.trim().replace(/(^;|;$)/, '').trim();
   if (themes.trim()!=='') {
     current_mark.dataset.themeLabel = themes;
@@ -242,7 +243,7 @@ function mark_analise() {
     if (text !== '') {
       let theme = document.querySelector('input[name="theme-option"]:checked');
       const element = selection.anchorNode.parentElement;
-      element.innerHTML = element.innerHTML.replace(text, `<span>${text}</span>`);
+      element.innerHTML = element.innerHTML.replace(text, `<span data-theme-label="Geral">${text}</span>`);
     }
   }
 }
@@ -636,7 +637,19 @@ function render_theme_list(themes) {
       type: 'li',
       attr: {
         'data-theme-id': theme,
-        'data-theme-label': themes[theme].label
+        'data-theme-label': themes[theme].label.trim(),
+        'data-findnext':'0',
+      },
+      events:{
+        'click': (e) => {
+          let next = parseInt(e.target.dataset.findnext);
+          const elements = document.querySelectorAll(`span[data-theme-label*='${e.target.dataset.themeLabel}']`);
+          if (next >= elements.length) {
+            next = 0;
+          }
+          scroll_to_element(elements[next]);
+          e.target.dataset.findnext = next + 1;
+        }
       },
       content: `${themes[theme].label} (${themes[theme].count})`
     }));
@@ -824,7 +837,9 @@ function isDeviceiPad(){
 }
 
 function scroll_to_element(element) {
+  document.querySelectorAll('span.current').forEach(item => item.removeAttribute('class'));
   if (element) {
+    element.classList.add('current');
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }

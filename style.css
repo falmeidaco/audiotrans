@@ -55,12 +55,22 @@ ol li textarea {
     background-color: bisque;
 }
 
+.analise span.current {
+    box-shadow: 0 0 2px 2px blue;
+}
+
 .analise span {
     background-color: beige;
     box-shadow: -1px 1px 2px black;
     padding: 2px 0;
     cursor: pointer;
     position: relative;
+    font-style: italic;
+    color:darkred;
+}
+.analise span[data-theme-label] {
+    font-style: normal;
+    color: black;
 }
 .analise span[data-theme-label]::before {
     position: absolute;
@@ -68,12 +78,12 @@ ol li textarea {
     top: -10px;
     left: 0;
     content:attr(data-theme-label);
-    font-size: .7rem;
+    font-size: .9rem;
     background-color:black;
     color: white;
     height: 12px;
     line-height: 1rem;
-    padding: 1px 4px;
+    padding: 2px 4px;
     text-wrap:nowrap;
     box-shadow: none;
     border-radius: 3px 3px 0 0;
@@ -276,19 +286,25 @@ ol li textarea {
     position: fixed;
     left: 50%;
     top: 50%;
-    width: 200px;
+    width: 300px;
     z-index: 10;
-    background-color: gray;;
-    padding: 10px;
-    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
     transform: translate(-50%, -50%);
     display: none;
+    border: 2px solid white;
+    box-shadow: 0 0 5px black;
+
 }
 .show_theme_modal {
     display: block;
 }
 .theme_modal div {
     margin-bottom: 5px;
+}
+.show_theme_modal input[type="text"] {
+    font-size: 1.3rem;
 }
 .theme_modal .themes  {
     display: flex;
