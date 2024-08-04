@@ -624,10 +624,10 @@ function process_themes() {
     }, 
     {}
   );
-  render_theme_list(ordered);
+  render_theme_list(ordered, current_themes.length);
 }
 
-function render_theme_list(themes) {
+function render_theme_list(themes, length) {
   const list_elements = document.querySelector('#analise_config_themes_container');
   while(list_elements.firstChild) {
     list_elements.removeChild(list_elements.firstChild);
@@ -638,7 +638,12 @@ function render_theme_list(themes) {
       attr: {
         'data-theme-id': theme,
         'data-theme-label': themes[theme].label.trim(),
-        'data-findnext':'0',
+        'data-findnext':'0'
+      },
+      styleprops: {
+        'data-presence-percent':`${Math.ceil((themes[theme].count/length)*100)}%`,
+        'data-presence-percent-inverse':`${Math.ceil(100-(themes[theme].count/length)*100)}%`,
+        'data-presence-percent-as-int': Math.ceil((themes[theme].count/length)*100)
       },
       events:{
         'click': (e) => {
@@ -651,7 +656,19 @@ function render_theme_list(themes) {
           e.target.dataset.findnext = next + 1;
         }
       },
-      content: `${themes[theme].label} (${themes[theme].count})`
+      content: [
+        {
+          type:'div',
+          content:`$html:${themes[theme].label} (<strong>${themes[theme].count}</strong>/${Math.ceil((themes[theme].count/length)*100)}%)`
+        },
+        {
+          type:'input',
+          attr:{
+            type:'checkbox',
+            name:'filter'
+          }
+        }
+      ]
     }));
   }
 }
@@ -879,6 +896,15 @@ function createNode(node) {
       }
     }
   }
+  //Events
+  if (node.hasOwnProperty('styleprops')) {
+    let styleprop;
+    for (styleprop in node.styleprops) {
+      if (node.styleprops.hasOwnProperty(styleprop)) {
+        nodeElement.style.setProperty('--'+styleprop, node.styleprops[styleprop]);
+      }
+    }
+  }
   return nodeElement;
 }
 
@@ -906,6 +932,8 @@ function text_friendly(input) {
     .replace(/^-*/, '')              // Remove starting dashes
     .replace(/-*$/, '');             // Remove trailing dashes
 }
+
+
 if (window.location.hash == "#devmode") {
   load(true);
   analise_mode_control.click();

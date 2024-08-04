@@ -149,7 +149,9 @@ ol li textarea {
     flex-shrink: 0;
 }
 .analise_config_themes li {
-    padding: 3px 3px 3px 15px;
+    padding: 3px 3px 3px 10px;
+    margin:0;
+    cursor: pointer;
 }
 .analise_config_themes li:hover {
     background-color: beige;
@@ -167,6 +169,13 @@ ol li textarea {
 .analise_config_themes input[type="text"].pending {
     background-color:bisque;
     font-style: italic;
+}
+.analise_config_themes li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1px;
+    --color: hsl(120, 40%, 70%);
+    background-image: linear-gradient(90deg, var(--color) 0, var(--color) var(--data-presence-percent), white var(--data-presence-percent));
 }
 
 .toolbar {
