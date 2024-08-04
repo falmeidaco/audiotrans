@@ -711,14 +711,81 @@ function export_json(content) {
 
 function export_html(content) {
   let content_text = '';
+  let html_content = '';
   let i = 1;
-  if (content) {
-    content.transcription.map(t => {
-      content_text += `<tr><td><p>${i}</p></td><td><p>${t.name}</p></td><td><p>${t.text}</p></td></tr>\n`;
-      i++;
+  if (analise_mode_control.checked) {
+    const transcription = document.querySelectorAll('.transcription li');
+    let line_id = 1;
+    transcription.forEach(line => {
+      const speaker = line.querySelector('select').value;
+      const segments = line.querySelectorAll('span[data-theme-label');
+      let segment_id = 1;
+      segments.forEach(segment => {
+        content_text += `
+        <tr>
+          <td>${line_id}</td>
+          <td>${speaker}</td>
+          <td>${segment_id}</td>
+          <td>${((segment.dataset.hasOwnProperty('themeLabel'))?segment.dataset.themeLabel:"")}</td>
+          <td>${((segment.parentElement.nodeName.toLocaleLowerCase()=="span")?"L":"")}</td>
+          <td>${segment.innerHTML}</td>
+        </tr>`;
+        // console.log(line_id, 
+        //             speaker, 
+        //             segment_id, 
+        //             segment.dataset.themeId,
+        //             ((segment.dataset['theme-label'])?segment.dataset['theme-label']:""),
+        //             ((segment.nodeName.toLocaleLowerCase()=="span")?"L":""),
+        //             segment.innerHTML
+        //           );
+        segment_id+=1;
+      });
+      line_id+=1;
     });
-  }
-  let html_content = `<!DOCTYPE html>
+    html_content = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trascrição codificada</title>
+<style>
+td,th { vertical-align:top; }
+tr:nth-child(odd) { background-color:lightgray; }
+span span { font-weight: 500; }
+</style>
+</head>
+<body>
+<table>
+<tr>
+  <th>#S</th>
+  <th>Nome</th>
+  <th>#T</th>
+  <th>Tema</th>
+  <th>F</th>
+  <th>Trecho</th>
+</tr>
+${content_text}
+</table>
+</body>
+</html>`;
+  } else {
+    if (content) {
+      const transcription = document.querySelectorAll('.transcription li');
+      let line_id = 1;
+      transcription.forEach(line => {
+        if (line.querySelectorAll('span').length>0) {
+          let segment_index = 1;
+          line.querySelectorAll('span').forEach(segment => {
+            if (segment.dataset.hasOwnProperty('themeLabel')) {
+              segment.dataset.index = `${segment_index}`;
+              segment_index+=1;
+            }
+          });
+        }
+        content_text += `<tr><td><p>${line_id}</p></td><td><p>${line.querySelector('select').value}</p></td><td><p>${line.querySelector('.analise').innerHTML.replace(/style\=\"[\w\d\(\)\-\,\:\; ]+\"/g, '')}</p></td></tr>\n`;
+        line_id += 1;
+      });
+      html_content = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -727,6 +794,9 @@ function export_html(content) {
 <style>
 td,th { vertical-align:top; }
 tr:nth-child(odd) { background-color:lightgray; }
+span::before {content:'[[';font-weight:bold;}
+span::after {content:']]';font-weight:bold;}
+span[data-theme-id]::before { content:"[["attr(data-index)"] "; }
 </style>
 </head>
 <body>
@@ -734,8 +804,12 @@ tr:nth-child(odd) { background-color:lightgray; }
 <tr><th>#</th><th>Nome</th><th>Transcrição</th></tr>
 ${content_text}
 </table>
+
 </body>
 </html>`;
+    }
+  }
+
   const a = document.createElement('a');
   const blob = new Blob([html_content], { type: "text/html" });
   const clickEvent = new MouseEvent("click", {
@@ -745,30 +819,6 @@ ${content_text}
   });
   a.href = window.URL.createObjectURL(blob);
   a.download = `document-${(content) ? content.name : ''}-${Date.now()}.html`;
-  a.dispatchEvent(clickEvent);
-}
-
-function export_audio_segments() {
-  const content = parse_data_to_json();
-  let content_text = '';
-  for (let i = 0; i < content.transcription.length; i = i +1) {
-    let next = (content.transcription[(i+1)]) ? content.transcription[(i+1)].position : content.duration;
-    let length = parseFloat(next) - parseFloat(content.transcription[i].position);
-    if (length <=0) length += 1;
-    content_text += `${(i+1)}_${content.transcription[i].name},${parseFloat(content.transcription[i].position).toFixed(3)},${parseFloat(length).toFixed(3)}\n`
-    //content_text += `ffmpeg -y -loglevel error -i "audio1.wav" -ss "${parseFloat(content.transcription[i].position).toFixed(3)}" -t "${parseFloat(length).toFixed(3)}" -q:a 0 "audio_segments/${(i+1)}_${content.transcription[i].name}.mp3"\n`
-  }
-  let csv_content = `id,start_time,length
-${content_text}`;
-  const a = document.createElement('a');
-  const blob = new Blob([csv_content], { type: "text/html" });
-  const clickEvent = new MouseEvent("click", {
-    "view": window,
-    "bubbles": true,
-    "cancelable": false
-  });
-  a.href = window.URL.createObjectURL(blob);
-  a.download = `audio_segments-${(content) ? content.name : ''}-${Date.now()}.csv`;
   a.dispatchEvent(clickEvent);
 }
 
@@ -855,4 +905,8 @@ function text_friendly(input) {
     .replace(/-+/g, '-')             // Remove duplicate dashes
     .replace(/^-*/, '')              // Remove starting dashes
     .replace(/-*$/, '');             // Remove trailing dashes
+}
+if (window.location.hash == "#devmode") {
+  load(true);
+  analise_mode_control.click();
 }
