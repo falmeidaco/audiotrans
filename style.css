@@ -263,10 +263,11 @@ ol li textarea {
 }
 
 @layer {
+
     ol li {
         position: relative;
     }
-
+   
     ol.info li::before {
         position: absolute;
         content: attr(data-index);
@@ -281,6 +282,18 @@ ol li textarea {
     }
 }
 
+.transcription.analise-mode li::before {
+    position: absolute;
+    content: attr(data-index);
+    display: block;
+    color: yellow;
+    background-color: black;
+    font-family: monospace;
+    font-size: 0.7rem;
+    padding: .1rem .3rem;
+    top: 0;
+    left: 0;
+}
 .theme_modal {
     position: fixed;
     left: 50%;
