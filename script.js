@@ -695,21 +695,25 @@ function apply_filter() {
       filter_regex_pattern += item.dataset.themeLabel + '|';
     });
     filter_regex_pattern = `${filter_regex_pattern.replace(/\|$/g,'')}`;
-    // /dat\a-theme\-label\=\"([\w \;\-]+)?Capacidade cognitiva\;?/g.test($0.innerHTML)
-    filter_regex_pattern = `data\\-theme\\-label\\=\\"([A-Za-zŽžÀ-ÖØ-Ýà-öø-ÿ \\;\\-]+)?(${filter_regex_pattern})\\;?`;
-    console.log(filter_regex_pattern);
-    const filter_regex = new RegExp(filter_regex_pattern, "g");
+    const filter_regex = new RegExp(`data\\-theme\\-label\\=\\"([A-Za-zŽžÀ-ÖØ-Ýà-öø-ÿ \\;\\-]+)?(${filter_regex_pattern})\\;?`, "g");
     document.querySelectorAll('.analise').forEach(item => {
-      //console.log(item.innerHTML);
       if (filter_regex.test(item.innerHTML)) {
-        console.log('Found!');
         item.parentElement.parentElement.style.display = 'flex';
+        const theme_filter_regex = new RegExp(`(${filter_regex_pattern})`, "g");
+        item.querySelectorAll('span[data-theme-label]').forEach(span => {
+          span.classList.remove('h');
+          if (span.dataset.themeLabel.search(theme_filter_regex) > -1) {
+            span.classList.add('h');
+          }
+        });
       } else {
         item.parentElement.parentElement.style.display = 'none';
       }
     });
   } else {
+    /* Reset */
     document.querySelectorAll('ol li').forEach(item => item.style.display = 'flex');
+    item.querySelectorAll('span.h').forEach(item => item.classList.remove('h'));
   }
 }
 
