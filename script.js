@@ -8,12 +8,12 @@ document.querySelector('#theme_save_button').addEventListener('click', (e) => {
   let themes = '';
   document.querySelectorAll('.theme_modal select').forEach(item => {
     if (item.value.trim() !== '') {
-      themes +=  item.value + '; ';
+      themes += item.value + '; ';
     }
   });
   themes += document.querySelector('#new_theme_label').value.trim();
   themes = themes.trim().replace(/(^;|;$)/, '').trim();
-  if (themes.trim()!=='') {
+  if (themes.trim() !== '') {
     current_mark.dataset.themeLabel = themes;
   } else {
     current_mark.removeAttribute('data-theme-label');
@@ -107,7 +107,7 @@ document.addEventListener('keyup', event => {
 
 document.addEventListener('keydown', (event) => {
   let prevent_event = true;
-  
+
   /* Show shortcuts */
   if (event.ctrlKey || event.shiftKey) {
     document.querySelector('.shortcuts').style.display = 'block';
@@ -146,8 +146,8 @@ document.addEventListener('keydown', (event) => {
         break;
       default: prevent_event = false;
     }
-  
-  /* SHIFT EVENTS */
+
+    /* SHIFT EVENTS */
   } else if (event.shiftKey) {
     /* Highlight shortcuts */
     document.querySelectorAll('.shortcuts p.shift').forEach(item => {
@@ -162,7 +162,7 @@ document.addEventListener('keydown', (event) => {
       default: prevent_event = false;
     }
 
-  /* CTRL EVENTS */
+    /* CTRL EVENTS */
   } else if (event.ctrlKey) {
     /* Highlight shortcuts */
     document.querySelectorAll('.shortcuts p.ctrl').forEach(item => {
@@ -232,7 +232,7 @@ function playlastmark() {
     if (textarea) {
       let marks = textarea.value.match(/\[\d+\.\d+\]/g);
       if (marks.length > 0) {
-        audio.currentTime = parseFloat(marks[marks.length-1].replace(/[\[\]]/g,''));
+        audio.currentTime = parseFloat(marks[marks.length - 1].replace(/[\[\]]/g, ''));
         audio.play();
       }
     }
@@ -271,7 +271,7 @@ function append(data, before) {
     name: '',
     position: audio.currentTime,
     text: '',
-    analise:'',
+    analise: '',
   }
   /* Overwrite defaults */
   if (data) {
@@ -285,7 +285,7 @@ function append(data, before) {
   /* Create node */
   const node = createNode({
     type: 'li',
-    attr:{'data-timestamp':values.timestamp},
+    attr: { 'data-timestamp': values.timestamp },
     content: [
       {
         type: 'div',
@@ -298,7 +298,7 @@ function append(data, before) {
                 /* Load names */
                 let option_values = document.querySelector('#names').value.split(',');
                 /* Parse name as options */
-                let options =  option_values.map(value => {
+                let options = option_values.map(value => {
                   let option = {
                     type: 'option',
                     attr: { value: value.toUpperCase() },
@@ -310,7 +310,7 @@ function append(data, before) {
                   }
                   return option;
                 });
-                return [{type:'option', attr:{value:''}, content:''}, ...options]
+                return [{ type: 'option', attr: { value: '' }, content: '' }, ...options]
               }(values.name))
             }
           },
@@ -348,7 +348,7 @@ function append(data, before) {
       },
       {
         type: 'div',
-        content: 
+        content:
           [
             {
               type: 'textarea',
@@ -357,7 +357,7 @@ function append(data, before) {
             },
             {
               type: 'div',
-              attr: {class:'analise'},
+              attr: { class: 'analise' },
               content: ((values.analise.trim() !== '') ? values.analise : values.text),
               events: {
                 'dblclick': (e) => {
@@ -403,7 +403,7 @@ function open_theme_modal(current) {
   current_mark = current;
   const modal = document.querySelector('.theme_modal');
   const modal_themes = modal.querySelector('.themes');
-  let themes = []; 
+  let themes = [];
   document.querySelectorAll('.analise_config_themes li').forEach(item => {
     themes.push(item.dataset.themeLabel);
   })
@@ -415,10 +415,10 @@ function open_theme_modal(current) {
     let current_labels = current.dataset.themeLabel.split(";");
     current_labels.forEach(current_label => {
       modal_themes.appendChild(createNode({
-        type:'select',
-        content:(function() {
+        type: 'select',
+        content: (function () {
           let options = [{
-            type:'option',
+            type: 'option',
             content: '--- Select one ---',
             attr: {
               value: ''
@@ -428,15 +428,15 @@ function open_theme_modal(current) {
             options.push({
               type: 'option',
               content: theme,
-              attr:(function() {
+              attr: (function () {
                 if (theme == current_label.trim()) {
                   return {
-                    value:theme,
-                    selected:'selected'
+                    value: theme,
+                    selected: 'selected'
                   }
                 } else {
                   return {
-                    value:theme
+                    value: theme
                   }
                 }
               }())
@@ -444,8 +444,8 @@ function open_theme_modal(current) {
           })
           return options;
         }())
-      }))      
-    }); 
+      }))
+    });
   }
   append_theme_blank_option(modal_themes, themes);
   open_hide_modal();
@@ -453,17 +453,17 @@ function open_theme_modal(current) {
 
 function append_theme_blank_option(modal_themes, themes) {
   modal_themes.appendChild(createNode({
-    type:'select',
+    type: 'select',
     events: {
       change: (e) => {
-        if (e.target.value.trim()!=='') {
+        if (e.target.value.trim() !== '') {
           append_theme_blank_option(modal_themes, themes)
         }
       }
     },
-    content:(function() {
+    content: (function () {
       let options = [{
-        type:'option',
+        type: 'option',
         content: '--- Select one ---',
         attr: {
           value: ''
@@ -473,8 +473,8 @@ function append_theme_blank_option(modal_themes, themes) {
         options.push({
           type: 'option',
           content: theme,
-          attr:{
-            value:theme
+          attr: {
+            value: theme
           }
         })
       })
@@ -525,13 +525,13 @@ function remaptabindex() {
     if (e.nextSibling) {
       let v1 = parseFloat(e.childNodes[0].childNodes[1].firstChild.value);
       let v2 = parseFloat(e.nextSibling.childNodes[0].childNodes[1].firstChild.value);
-      v3 = v2-v1;
+      v3 = v2 - v1;
     }
     if (parseInt(e.dataset.timestamp) > 0) {
       const d = new Date(parseInt(e.dataset.timestamp));
-      t = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+      t = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
     }
-    e.dataset.index = `${(i+1)} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)} | ${t}`;
+    e.dataset.index = `${(i + 1)} | ${e.childNodes[1].childNodes[0].value.split(' ').length} w | ${formatTime(v3)} | ${t}`;
     e.querySelector('textarea').setAttribute('tabindex', i + 1);
   });
 }
@@ -550,8 +550,8 @@ function formatTime(seconds) {
 
   // Format the time string
   var timeString = hours.toString().padStart(2, '0') + ":" +
-                   minutes.toString().padStart(2, '0') + ":" +
-                   seconds.toString().padStart(2, '0');
+    minutes.toString().padStart(2, '0') + ":" +
+    seconds.toString().padStart(2, '0');
 
   return timeString;
 }
@@ -628,7 +628,7 @@ function process_themes() {
         themes[theme_id] = {
           label: theme_label,
           count: 1,
-          participation:{}
+          participation: {}
         }
         themes[theme_id].participation[author] = 1;
       } else {
@@ -642,10 +642,10 @@ function process_themes() {
     });
   });
   const ordered = Object.keys(themes).sort().reduce(
-    (obj, key) => { 
-      obj[key] = themes[key]; 
+    (obj, key) => {
+      obj[key] = themes[key];
       return obj;
-    }, 
+    },
     {}
   );
   render_theme_list(ordered, current_themes.length);
@@ -653,7 +653,7 @@ function process_themes() {
 
 function render_theme_list(themes, length) {
   const list_elements = document.querySelector('#analise_config_themes_container');
-  while(list_elements.firstChild) {
+  while (list_elements.firstChild) {
     list_elements.removeChild(list_elements.firstChild);
   }
   for (let theme in themes) {
@@ -662,17 +662,17 @@ function render_theme_list(themes, length) {
       attr: {
         'data-theme-id': theme,
         'data-theme-label': themes[theme].label.trim(),
-        'data-findnext':'0'
+        'data-findnext': '0'
       },
       styleprops: {
-        'data-presence-percent':`${Math.ceil((themes[theme].count/length)*100)}%`,
-        'data-presence-percent-inverse':`${Math.ceil(100-(themes[theme].count/length)*100)}%`,
-        'data-presence-percent-as-int': Math.ceil((themes[theme].count/length)*100)
+        'data-presence-percent': `${Math.ceil((themes[theme].count / length) * 100)}%`,
+        'data-presence-percent-inverse': `${Math.ceil(100 - (themes[theme].count / length) * 100)}%`,
+        'data-presence-percent-as-int': Math.ceil((themes[theme].count / length) * 100)
       },
       content: [
         {
-          type:'div',
-          events:{
+          type: 'div',
+          events: {
             'click': (e) => {
               let next = parseInt(e.target.parentElement.dataset.findnext);
               const elements = document.querySelectorAll(`span[data-theme-label*='${e.target.parentElement.dataset.themeLabel}']`);
@@ -683,14 +683,27 @@ function render_theme_list(themes, length) {
               e.target.parentElement.dataset.findnext = next + 1;
             }
           },
-          content:`$html:${themes[theme].label} (<strong>${themes[theme].count}</strong>/${Math.ceil((themes[theme].count/length)*100)}%) (${Object.keys(themes[theme].participation).length})`
+          content: `$html:${themes[theme].label} (<strong>${themes[theme].count}</strong>/${Math.ceil((themes[theme].count / length) * 100)}%) (${Object.keys(themes[theme].participation).length})`
         },
         {
-          type:'input',
-          attr:{
-            type:'checkbox',
-            name:'theme-filter',
-            'data-theme-label':themes[theme].label.trim()
+          type: 'input',
+          attr: {
+            type: 'checkbox',
+            name: 'theme-filter',
+            'data-theme-label': themes[theme].label.trim()
+          },
+          events: {
+            'change': (e) => {
+              apply_filter();
+            }
+          }
+        },
+        {
+          type: 'input',
+          attr: {
+            type: 'checkbox',
+            name: 'theme-filter-remove',
+            'data-theme-label': themes[theme].label.trim()
           },
           events: {
             'change': (e) => {
@@ -705,7 +718,13 @@ function render_theme_list(themes, length) {
 
 function apply_filter() {
   const theme_filters = document.querySelectorAll('input[name="theme-filter"]:checked');
+  const theme_filters_remove = document.querySelectorAll('input[name="theme-filter-remove"]:checked');
   if (theme_filters.length > 0) {
+    if (intersection_filter_control.checked) {
+      document.querySelectorAll('input[name="theme-filter"]').forEach(item => item.setAttribute('disabled', 'disabled'));
+    } else {
+      document.querySelectorAll('input[name="theme-filter"]').forEach(item => item.removeAttribute('disabled'));
+    }
     let filter_regex_pattern = '';
     theme_filters.forEach(item => {
       if (!intersection_filter_control.checked) {
@@ -714,16 +733,39 @@ function apply_filter() {
         filter_regex_pattern += `(?=.*${item.dataset.themeLabel})`;
       }
     });
-    filter_regex_pattern = `${filter_regex_pattern.replace(/\|$/g,'')}`;
+    filter_regex_pattern = `${filter_regex_pattern.replace(/\|$/g, '')}`;
     const filter_regex = new RegExp(`data\\-theme\\-label\\=\\"([A-Za-zŽžÀ-ÖØ-Ýà-öø-ÿ \\;\\-]+)?(${filter_regex_pattern})\\;?`, "g");
+    const theme_filter_regex = new RegExp(`(${filter_regex_pattern})`, "g");
+
+    let filter_remove_regex_pattern = '';
+    let filter_remove_regex;
+    if (theme_filters_remove.length > 0) {
+      theme_filters_remove.forEach(item => {
+        filter_remove_regex_pattern += item.dataset.themeLabel + '|';
+      });
+      filter_remove_regex_pattern = `${filter_remove_regex_pattern.replace(/\|$/g, '')}`;
+      filter_remove_regex = new RegExp(`(${filter_remove_regex_pattern})`, "g");
+    }
+
     document.querySelectorAll('.analise').forEach(item => {
       if (filter_regex.test(item.innerHTML)) {
         item.parentElement.parentElement.style.display = 'flex';
-        const theme_filter_regex = new RegExp(`(${filter_regex_pattern})`, "g");
+        
         item.querySelectorAll('span[data-theme-label]').forEach(span => {
           span.classList.remove('h');
           if (span.dataset.themeLabel.search(theme_filter_regex) > -1) {
             span.classList.add('h');
+            if (intersection_filter_control.checked) {
+              span.dataset.themeLabel.split(';').forEach(span_theme => {
+                document.querySelector(`input[name="theme-filter"][data-theme-label="${span_theme.trim()}"]`).removeAttribute('disabled');
+              });
+            }
+          }
+          /* Disable highlight from exclusion filter */
+          if (theme_filters_remove.length > 0) {
+            if (span.dataset.themeLabel.search(filter_remove_regex) > -1) {
+              span.classList.remove('h');
+            }
           }
         });
       } else {
@@ -732,6 +774,7 @@ function apply_filter() {
     });
   } else {
     /* Reset */
+    document.querySelectorAll('input[name="theme-filter"]').forEach(item => item.removeAttribute('disabled'));
     document.querySelectorAll('ol li').forEach(item => item.style.display = 'flex');
     document.querySelectorAll('span.h').forEach(item => item.classList.remove('h'));
   }
@@ -807,21 +850,13 @@ function export_html(content) {
           <td>${line_id}</td>
           <td>${speaker}</td>
           <td>${segment_id}</td>
-          <td>${((segment.dataset.hasOwnProperty('themeLabel'))?segment.dataset.themeLabel:"")}</td>
-          <td>${((segment.parentElement.nodeName.toLocaleLowerCase()=="span")?"L":"")}</td>
+          <td>${((segment.dataset.hasOwnProperty('themeLabel')) ? segment.dataset.themeLabel : "")}</td>
+          <td>${((segment.parentElement.nodeName.toLocaleLowerCase() == "span") ? "L" : "")}</td>
           <td>${segment.innerHTML}</td>
         </tr>`;
-        // console.log(line_id, 
-        //             speaker, 
-        //             segment_id, 
-        //             segment.dataset.themeId,
-        //             ((segment.dataset['theme-label'])?segment.dataset['theme-label']:""),
-        //             ((segment.nodeName.toLocaleLowerCase()=="span")?"L":""),
-        //             segment.innerHTML
-        //           );
-        segment_id+=1;
+        segment_id += 1;
       });
-      line_id+=1;
+      line_id += 1;
     });
     html_content = `<!DOCTYPE html>
 <html>
@@ -854,12 +889,12 @@ ${content_text}
       const transcription = document.querySelectorAll('.transcription li');
       let line_id = 1;
       transcription.forEach(line => {
-        if (line.querySelectorAll('span').length>0) {
+        if (line.querySelectorAll('span').length > 0) {
           let segment_index = 1;
           line.querySelectorAll('span').forEach(segment => {
             if (segment.dataset.hasOwnProperty('themeLabel')) {
               segment.dataset.index = `${segment_index}`;
-              segment_index+=1;
+              segment_index += 1;
             }
           });
         }
@@ -965,14 +1000,14 @@ function createNode(node) {
     let styleprop;
     for (styleprop in node.styleprops) {
       if (node.styleprops.hasOwnProperty(styleprop)) {
-        nodeElement.style.setProperty('--'+styleprop, node.styleprops[styleprop]);
+        nodeElement.style.setProperty('--' + styleprop, node.styleprops[styleprop]);
       }
     }
   }
   return nodeElement;
 }
 
-function isDeviceiPad(){
+function isDeviceiPad() {
   return navigator.userAgent.match(/iPad/i);
 }
 
