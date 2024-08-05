@@ -1,6 +1,9 @@
 let audio_loaded = false;
 let current_mark;
 
+const intersection_filter_control = document.querySelector('#intersection_filter_control');
+intersection_filter_control.addEventListener('change', apply_filter);
+
 document.querySelector('#theme_save_button').addEventListener('click', (e) => {
   let themes = '';
   document.querySelectorAll('.theme_modal select').forEach(item => {
@@ -610,6 +613,12 @@ function process_themes() {
   const current_themes = document.querySelectorAll('.analise span[data-theme-label');
   let themes = {};
   current_themes.forEach(theme => {
+    let author = '';
+    if (theme.parentElement.nodeName.toLocaleLowerCase() !== 'span') {
+      author = theme.parentElement.parentElement.parentElement.querySelector('select').value.toLowerCase();
+    } else {
+      author = theme.parentElement.parentElement.parentElement.parentElement.querySelector('select').value.toLowerCase();
+    }
     theme.removeAttribute('data-theme-id');
     theme.removeAttribute('style');
     theme_labels = theme.dataset.themeLabel.split(";");
@@ -618,10 +627,17 @@ function process_themes() {
       if (!themes[theme_id]) {
         themes[theme_id] = {
           label: theme_label,
-          count: 1
+          count: 1,
+          participation:{}
         }
+        themes[theme_id].participation[author] = 1;
       } else {
         themes[theme_id].count += 1;
+        if (themes[theme_id].participation.hasOwnProperty(author)) {
+          themes[theme_id].participation[author] = themes[theme_id].participation[author] + 1;
+        } else {
+          themes[theme_id].participation[author] = 1;
+        }
       }
     });
   });
@@ -667,7 +683,7 @@ function render_theme_list(themes, length) {
               e.target.parentElement.dataset.findnext = next + 1;
             }
           },
-          content:`$html:${themes[theme].label} (<strong>${themes[theme].count}</strong>/${Math.ceil((themes[theme].count/length)*100)}%)`
+          content:`$html:${themes[theme].label} (<strong>${themes[theme].count}</strong>/${Math.ceil((themes[theme].count/length)*100)}%) (${Object.keys(themes[theme].participation).length})`
         },
         {
           type:'input',
@@ -692,7 +708,11 @@ function apply_filter() {
   if (theme_filters.length > 0) {
     let filter_regex_pattern = '';
     theme_filters.forEach(item => {
-      filter_regex_pattern += item.dataset.themeLabel + '|';
+      if (!intersection_filter_control.checked) {
+        filter_regex_pattern += item.dataset.themeLabel + '|';
+      } else {
+        filter_regex_pattern += `(?=.*${item.dataset.themeLabel})`;
+      }
     });
     filter_regex_pattern = `${filter_regex_pattern.replace(/\|$/g,'')}`;
     const filter_regex = new RegExp(`data\\-theme\\-label\\=\\"([A-Za-zŽžÀ-ÖØ-Ýà-öø-ÿ \\;\\-]+)?(${filter_regex_pattern})\\;?`, "g");
