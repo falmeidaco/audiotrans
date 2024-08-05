@@ -810,8 +810,8 @@ function process_stats() {
   let representation = {};
   if (document.querySelector('input[name="theme-filter"]:checked')) {
     el_segments.innerText = document.querySelectorAll('ol li:not(.hide-item)').length;
-    el_marks.innerText = document.querySelectorAll('ol li:not(.hide-item) span.h').length;
-    const valid_segments = document.querySelectorAll('ol li:has(span.h)');
+    el_marks.innerText = document.querySelectorAll('ol li:not(.hide-item):has(span.h)').length;
+    const valid_segments = document.querySelectorAll('ol li:not(.hide-item):has(span.h)');
     valid_segments.forEach(item => {
       let author = item.querySelector('select').value;
       if (representation.hasOwnProperty(author)) {
