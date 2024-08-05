@@ -29,6 +29,14 @@ document.querySelector('#theme_reset_button').addEventListener('click', (e) => {
   open_hide_modal();
 });
 
+document.querySelector('#analise_block_mark_control').addEventListener('change', (e) => {
+  if (e.target.checked) {
+    document.querySelector('.transcription').classList.add('analise-mode-block-mark');
+  } else {
+    document.querySelector('.transcription').classList.remove('analise-mode-block-mark');
+  }
+});
+
 function open_hide_modal() {
   const modal = document.querySelector('.theme_modal');
   if (modal.classList.contains('show_theme_modal')) {
@@ -632,7 +640,7 @@ function render_theme_list(themes, length) {
   while(list_elements.firstChild) {
     list_elements.removeChild(list_elements.firstChild);
   }
-  for (theme in themes) {
+  for (let theme in themes) {
     list_elements.appendChild(createNode({
       type: 'li',
       attr: {
@@ -645,20 +653,20 @@ function render_theme_list(themes, length) {
         'data-presence-percent-inverse':`${Math.ceil(100-(themes[theme].count/length)*100)}%`,
         'data-presence-percent-as-int': Math.ceil((themes[theme].count/length)*100)
       },
-      events:{
-        'click': (e) => {
-          let next = parseInt(e.target.dataset.findnext);
-          const elements = document.querySelectorAll(`span[data-theme-label*='${e.target.dataset.themeLabel}']`);
-          if (next >= elements.length) {
-            next = 0;
-          }
-          scroll_to_element(elements[next]);
-          e.target.dataset.findnext = next + 1;
-        }
-      },
       content: [
         {
           type:'div',
+          events:{
+            'click': (e) => {
+              let next = parseInt(e.target.parentElement.dataset.findnext);
+              const elements = document.querySelectorAll(`span[data-theme-label*='${e.target.parentElement.dataset.themeLabel}']`);
+              if (next >= elements.length) {
+                next = 0;
+              }
+              scroll_to_element(elements[next]);
+              e.target.parentElement.dataset.findnext = next + 1;
+            }
+          },
           content:`$html:${themes[theme].label} (<strong>${themes[theme].count}</strong>/${Math.ceil((themes[theme].count/length)*100)}%)`
         },
         {
