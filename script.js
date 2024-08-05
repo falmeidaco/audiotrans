@@ -615,6 +615,7 @@ function process_themes() {
   const current_themes = document.querySelectorAll('.analise span[data-theme-label');
   let themes = {};
   current_themes.forEach(theme => {
+    theme.removeAttribute('class');
     let author = '';
     if (theme.parentElement.nodeName.toLocaleLowerCase() !== 'span') {
       author = theme.parentElement.parentElement.parentElement.querySelector('select').value.toLowerCase();
@@ -712,6 +713,25 @@ function render_theme_list(themes, length) {
               apply_filter();
             }
           }
+        },
+        {
+          type: 'button',
+          attr: {
+            'data-theme-label': themes[theme].label.trim()
+          },
+          events: {
+            'click': (e) => {
+              const current_name = e.target.dataset.themeLabel
+              const new_name = window.prompt('New name', current_name);
+              if (typeof new_name === 'string' && new_name !== current_name) {
+                document.querySelectorAll(`.analise span[data-theme-label*="${current_name}"]`).forEach(item => {
+                  item.dataset.themeLabel = item.dataset.themeLabel.replace(current_name, new_name);
+                });
+                process_themes();
+              }
+            }
+          },
+          content:'R'
         }
       ]
     }));
