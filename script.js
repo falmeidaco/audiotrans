@@ -140,6 +140,8 @@ document.addEventListener('keydown', (event) => {
         break;
       case "KeyL": load();
         break;
+      case "KeyB": batch_theme_map();
+        break;
       case "KeyM": mark_analise();
         break;
       case "Enter": append(null, true);
@@ -1071,4 +1073,26 @@ function text_friendly(input) {
 if (window.location.hash == "#devmode") {
   load(true);
   analise_mode_control.click();
+}
+
+
+function batch_theme_map(v) {
+  let value = '...'
+  if (v) {
+    value = v;
+  } else {
+    value = window.prompt('Insert batch command', value);
+  }
+  if (value.split(';').length == 2) {
+    const [indexes, theme_label] = value.split(';');
+    indexes.split(",").forEach(index => {
+      const [segment, mark] = index.split('-');
+      const element = document.querySelector(`ol li:nth-child(${segment}) span[data-theme-label]:nth-child(${mark})`);
+      const current_themes = element.dataset.themeLabel;
+      if (current_themes.search(theme_label) < 0) {
+        element.dataset.themeLabel = `${current_themes}; ${theme_label}`;
+      }
+    });
+    process_themes();
+  }
 }
