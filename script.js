@@ -608,11 +608,7 @@ function render_loaded(data) {
     append(d);
   });
   process_themes();
-  // if (data.hasOwnProperty('analise_config')) {
-  //   render_analise_themes_options(data.analise_config.themes);
-  // } else {
-  //   render_analise_themes_options();
-  // }
+  process_stats();
 }
 
 function process_themes() {
@@ -775,8 +771,7 @@ function apply_filter() {
 
     document.querySelectorAll('.analise').forEach(item => {
       if (filter_regex.test(item.innerHTML)) {
-        item.parentElement.parentElement.style.display = 'flex';
-        
+        item.parentElement.parentElement.classList.remove('hide-item');
         item.querySelectorAll('span[data-theme-label]').forEach(span => {
           span.classList.remove('h');
           if (span.dataset.themeLabel.search(theme_filter_regex) > -1) {
@@ -795,15 +790,74 @@ function apply_filter() {
           }
         });
       } else {
-        item.parentElement.parentElement.style.display = 'none';
+        item.parentElement.parentElement.classList.add('hide-item');
       }
     });
   } else {
     /* Reset */
     document.querySelectorAll('input[name="theme-filter"]').forEach(item => item.removeAttribute('disabled'));
-    document.querySelectorAll('ol li').forEach(item => item.style.display = 'flex');
+    document.querySelectorAll('ol li').forEach(item => item.classList.remove('hide-item'));
     document.querySelectorAll('span.h').forEach(item => item.classList.remove('h'));
     process_themes();
+  }
+  process_stats();
+}
+
+function process_stats() {
+  const el_segments = document.querySelector('#stats_segments');
+  const el_marks = document.querySelector('#stats_marks');
+  const el_representation = document.querySelector('#stats_representation');
+  let representation = {};
+  if (document.querySelector('input[name="theme-filter"]:checked')) {
+    el_segments.innerText = document.querySelectorAll('ol li:not(.hide-item)').length;
+    el_marks.innerText = document.querySelectorAll('ol li:not(.hide-item) span.h').length;
+    const valid_segments = document.querySelectorAll('ol li:has(span.h)');
+    valid_segments.forEach(item => {
+      let author = item.querySelector('select').value;
+      if (representation.hasOwnProperty(author)) {
+        representation[author] = representation[author] + 1;
+      } else {
+        representation[author] = 1;
+      }
+    });
+    let representation_value = `<strong>${Object.keys(representation).length}</strong> | `;
+    /* Sort */
+    const representation_s = Object.keys(representation).sort().reduce(
+      (obj, key) => {
+        obj[key] = representation[key];
+        return obj;
+      },
+      {}
+    );
+    for (let r in representation_s) {
+      representation_value += `${r}(<strong>${representation_s[r]}</strong>), `
+    }
+    el_representation.innerHTML = representation_value.replace(/\, $/, '');
+  } else {
+    el_segments.innerText = document.querySelectorAll('ol li:not(.hide-item)').length;
+    el_marks.innerText = document.querySelectorAll('ol li:not(.hide-item) span').length;
+    const valid_segments = document.querySelectorAll('ol li:has(span)');
+    valid_segments.forEach(item => {
+      let author = item.querySelector('select').value;
+      if (representation.hasOwnProperty(author)) {
+        representation[author] = representation[author] + 1;
+      } else {
+        representation[author] = 1;
+      }
+    });
+    /* Sort */
+    const representation_s = Object.keys(representation).sort().reduce(
+      (obj, key) => {
+        obj[key] = representation[key];
+        return obj;
+      },
+      {}
+    );
+    let representation_value = `<strong>${Object.keys(representation).length}</strong> | `;
+    for (let r in representation) {
+      representation_value += `${r}(<strong>${representation[r]}</strong>), `
+    }
+    el_representation.innerHTML = representation_value.replace(/\, $/, '');
   }
 }
 

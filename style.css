@@ -113,10 +113,6 @@ ol li textarea {
 }
 
 .analise_config {
-    display: none;
-}
-
-.analise_config {
     display: none;   
     width: calc(30vw - 10px);
     height: calc(100vh - 80px);
@@ -124,7 +120,13 @@ ol li textarea {
     right: 0;
     top:80px;
     overflow-y: scroll;
+    background-color: white;
 }
+
+.analise_config:hover {
+    z-index: 20;
+}
+
 .transcription.analise-mode+.analise_config {
     display: block;
 }
@@ -329,4 +331,23 @@ ol li textarea {
 .theme_modal .options {
     display: flex;
     justify-content: space-between;
+}
+.stats {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0,0,0, 0.9);
+    width: calc(70vw - 40px);
+    padding: 5px 10px;
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    z-index: 20;
+}
+.stats strong {
+    color: yellow;
+    font-weight: bold;
+    
+}
+.hide-item {
+    display: none;
 }
