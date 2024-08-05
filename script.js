@@ -18,7 +18,9 @@ document.querySelector('#theme_save_button').addEventListener('click', (e) => {
   } else {
     current_mark.removeAttribute('data-theme-label');
   }
-  process_themes();
+  if (!document.querySelector('input[name="theme-filter"]:checked')) {
+    process_themes();
+  }
   open_hide_modal();
 });
 
@@ -777,6 +779,7 @@ function apply_filter() {
     document.querySelectorAll('input[name="theme-filter"]').forEach(item => item.removeAttribute('disabled'));
     document.querySelectorAll('ol li').forEach(item => item.style.display = 'flex');
     document.querySelectorAll('span.h').forEach(item => item.classList.remove('h'));
+    process_themes();
   }
 }
 
