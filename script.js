@@ -713,7 +713,7 @@ function apply_filter() {
   } else {
     /* Reset */
     document.querySelectorAll('ol li').forEach(item => item.style.display = 'flex');
-    item.querySelectorAll('span.h').forEach(item => item.classList.remove('h'));
+    document.querySelectorAll('span.h').forEach(item => item.classList.remove('h'));
   }
 }
 
