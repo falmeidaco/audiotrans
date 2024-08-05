@@ -254,10 +254,10 @@ function mark_analise() {
     const selection = window.getSelection();
     const text = selection.toString().trim();
     if (text !== '') {
-      let theme = document.querySelector('input[name="theme-option"]:checked');
       const element = selection.anchorNode.parentElement;
       element.innerHTML = element.innerHTML.replace(text, `<span data-theme-label="Geral">${text}</span>`);
     }
+    remap_marks();
   }
 }
 
@@ -368,6 +368,7 @@ function append(data, before) {
                     const target = e.target;
                     container.innerHTML = container.innerHTML.replace(target.outerHTML, target.innerHTML);
                     process_themes();
+                    remap_marks();
                   } else {
                     if (e.target.classList.contains('analise')) {
                       if (!e.target.classList.contains('analise-edit')) {
@@ -399,6 +400,7 @@ function append(data, before) {
     document.querySelector('ol li:last-child textarea').focus();
   }
   remaptabindex();
+  remap_marks();
 }
 
 function open_theme_modal(current) {
@@ -1040,6 +1042,16 @@ function scroll_to_element(element) {
     element.classList.add('current');
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+}
+
+function remap_marks() {
+  document.querySelectorAll('.analise').forEach(item => {
+    let i = 1;
+    item.querySelectorAll('span').forEach(item_span => {
+      item_span.dataset.index = i;
+      i +=1;
+    });
+  });
 }
 
 function text_friendly(input) {

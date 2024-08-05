@@ -77,7 +77,7 @@ ol li textarea {
     display: block;
     top: -10px;
     left: 0;
-    content:attr(data-theme-label);
+    content: attr(data-index) ' ' attr(data-theme-label);
     font-size: .9rem;
     background-color:black;
     color: white;
