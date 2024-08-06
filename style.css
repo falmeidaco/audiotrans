@@ -226,7 +226,7 @@ ol li textarea {
     right: 20px;
     top: 20px;
     background-color: rgba(0, 0, 0, .7);
-    z-index: 11;
+    z-index: 30;
     font-family: monospace;
     padding: 1rem;
     color: white;

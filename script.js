@@ -111,13 +111,15 @@ document.addEventListener('keydown', (event) => {
   let prevent_event = true;
 
   /* Show shortcuts */
-  if (event.ctrlKey || event.shiftKey) {
-    document.querySelector('.shortcuts').style.display = 'block';
-    document.querySelector('ol').classList.add('info');
+  if (!analise_mode_control.checked) {
+    if (event.ctrlKey || event.shiftKey) {
+      document.querySelector('.shortcuts').style.display = 'block';
+      document.querySelector('ol').classList.add('info');
+    }
+    document.querySelectorAll('.shortcuts p.h').forEach(item => {
+      item.classList.remove('h');
+    });
   }
-  document.querySelectorAll('.shortcuts p.h').forEach(item => {
-    item.classList.remove('h');
-  });
 
   /* CTRL SHIFT EVENTS */
   if (event.ctrlKey && event.shiftKey) {
