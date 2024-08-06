@@ -756,7 +756,6 @@ function apply_filter() {
       }
     });
     filter_regex_pattern = `${filter_regex_pattern.replace(/\|$/g, '')}`;
-    const filter_regex = new RegExp(`(${filter_regex_pattern})`, "g");
     const theme_filter_regex = new RegExp(`(${filter_regex_pattern})`, "g");
 
     let filter_remove_regex_pattern = '';
