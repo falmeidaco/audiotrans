@@ -810,15 +810,17 @@ function process_stats() {
   let representation = {};
   if (document.querySelector('input[name="theme-filter"]:checked')) {
     el_segments.innerText = document.querySelectorAll('ol li:not(.hide-item)').length;
-    el_marks.innerText = document.querySelectorAll('ol li:not(.hide-item):has(span.h)').length;
+    el_marks.innerText = document.querySelectorAll('ol li:not(.hide-item) span.h').length;
     const valid_segments = document.querySelectorAll('ol li:not(.hide-item):has(span.h)');
     valid_segments.forEach(item => {
       let author = item.querySelector('select').value;
-      if (representation.hasOwnProperty(author)) {
-        representation[author] = representation[author] + 1;
-      } else {
-        representation[author] = 1;
-      }
+      item.querySelectorAll('span.h').forEach(item_mark => {
+        if (representation.hasOwnProperty(author)) {
+          representation[author] = representation[author] + 1;
+        } else {
+          representation[author] = 1;
+        }
+      });
     });
     let representation_value = `<strong>${Object.keys(representation).length}</strong> | `;
     /* Sort */
@@ -839,13 +841,16 @@ function process_stats() {
     const valid_segments = document.querySelectorAll('ol li:has(span)');
     valid_segments.forEach(item => {
       let author = item.querySelector('select').value;
-      if (representation.hasOwnProperty(author)) {
-        representation[author] = representation[author] + 1;
-      } else {
-        representation[author] = 1;
-      }
+      item.querySelectorAll('span').forEach(item_mark => {
+        if (representation.hasOwnProperty(author)) {
+          representation[author] = representation[author] + 1;
+        } else {
+          representation[author] = 1;
+        }
+      });
     });
     /* Sort */
+    console.log(representation);
     const representation_s = Object.keys(representation).sort().reduce(
       (obj, key) => {
         obj[key] = representation[key];
