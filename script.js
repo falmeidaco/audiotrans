@@ -756,7 +756,7 @@ function apply_filter() {
       }
     });
     filter_regex_pattern = `${filter_regex_pattern.replace(/\|$/g, '')}`;
-    const filter_regex = new RegExp(`data\\-theme\\-label\\=\\"([A-Za-zŽžÀ-ÖØ-Ýà-öø-ÿ \\;\\-]+)?(${filter_regex_pattern})\\;?`, "g");
+    const filter_regex = new RegExp(`(${filter_regex_pattern})`, "g");
     const theme_filter_regex = new RegExp(`(${filter_regex_pattern})`, "g");
 
     let filter_remove_regex_pattern = '';
@@ -770,9 +770,18 @@ function apply_filter() {
     }
 
     document.querySelectorAll('.analise').forEach(item => {
-      if (filter_regex.test(item.innerHTML)) {
+      const rgx = new RegExp(`(${filter_regex_pattern})`, "g");
+      const item_span = item.querySelectorAll('span[data-theme-label');
+      let found = false;
+      for (let i = 0; i < item_span.length; i++) {
+        if (rgx.test(item_span[i].dataset.themeLabel)) {
+          found = true;
+          break;
+        }
+      }
+      if (found) {
         item.parentElement.parentElement.classList.remove('hide-item');
-        item.querySelectorAll('span[data-theme-label]').forEach(span => {
+        item_span.forEach(span => {
           span.classList.remove('h');
           if (span.dataset.themeLabel.search(theme_filter_regex) > -1) {
             span.classList.add('h');
@@ -850,7 +859,6 @@ function process_stats() {
       });
     });
     /* Sort */
-    console.log(representation);
     const representation_s = Object.keys(representation).sort().reduce(
       (obj, key) => {
         obj[key] = representation[key];
