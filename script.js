@@ -366,6 +366,14 @@ function append(data, before) {
               attr: { class: 'analise' },
               content: ((values.analise.trim() !== '') ? values.analise : values.text),
               events: {
+                'click': (e) => {
+                  const theme_current = document.querySelector('input[name="theme-apply-current"]');
+                  if (theme_current && e.target.dataset.hasOwnProperty('themeLabel')) {
+                    if (e.target.dataset.themeLabel.search(theme_current.dataset.themeLabel) < 0) {
+                      e.target.dataset.themeLabel = e.target.dataset.themeLabel + '; ' +theme_current.dataset.themeLabel;
+                    }
+                  }
+                },
                 'dblclick': (e) => {
                   if (e.shiftKey) {
                     const container = e.target.parentElement;
@@ -613,7 +621,7 @@ function render_loaded(data) {
   process_stats();
 }
 
-function process_themes() {
+function process_themes(state) {
   const current_themes = document.querySelectorAll('.analise span[data-theme-label');
   let themes = {};
   current_themes.forEach(theme => {
@@ -653,10 +661,10 @@ function process_themes() {
     },
     {}
   );
-  render_theme_list(ordered, current_themes.length);
+  render_theme_list(ordered, current_themes.length, state);
 }
 
-function render_theme_list(themes, length) {
+function render_theme_list(themes, length, state) {
   const list_elements = document.querySelector('#analise_config_themes_container');
   while (list_elements.firstChild) {
     list_elements.removeChild(list_elements.firstChild);
@@ -714,6 +722,14 @@ function render_theme_list(themes, length) {
             'change': (e) => {
               apply_filter();
             }
+          }
+        },
+        {
+          type: 'input',
+          attr: {
+            type: 'checkbox',
+            name: 'theme-apply-current',
+            'data-theme-label': themes[theme].label.trim()
           }
         },
         {
