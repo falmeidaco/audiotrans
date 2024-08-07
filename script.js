@@ -367,10 +367,11 @@ function append(data, before) {
               content: ((values.analise.trim() !== '') ? values.analise : values.text),
               events: {
                 'click': (e) => {
-                  const theme_current = document.querySelector('input[name="theme-apply-current"]');
+                  const theme_current = document.querySelector('input[name="theme-apply-current"]:checked');
                   if (theme_current && e.target.dataset.hasOwnProperty('themeLabel')) {
                     if (e.target.dataset.themeLabel.search(theme_current.dataset.themeLabel) < 0) {
                       e.target.dataset.themeLabel = e.target.dataset.themeLabel + '; ' +theme_current.dataset.themeLabel;
+                      e.target.classList.add('h');
                     }
                   }
                 },
